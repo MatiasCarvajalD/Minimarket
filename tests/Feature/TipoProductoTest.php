@@ -2,10 +2,12 @@
 
 namespace Tests\Feature;
 
+
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\TipoProducto;
-use App\Models\Producto;
+use App\Models\TipoProducto; // Importa el modelo TipoProducto
+use App\Models\Producto; // Importar el modelo Producto
+
 
 class TipoProductoTest extends TestCase
 {
@@ -13,28 +15,24 @@ class TipoProductoTest extends TestCase
 
     public function test_tipo_producto_relations()
     {
-        // Crear una categoría en tipo_producto
+        // Crear una categoría
         $tipo = TipoProducto::create(['categoria' => 'Lácteos']);
-    
-        // Recuperar su id_categoria
-        $idCategoria = $tipo->id_categoria;
-    
-        // Validar que id_categoria no sea null
-        $this->assertNotNull($idCategoria, 'id_categoria debería tener un valor válido');
-    
-        // Crear un producto relacionado con la categoría
+
+        // Asegurarte de que id_categoria no es null
+        $this->assertNotNull($tipo->id_categoria, 'id_categoria no debería ser null');
+
+        // Crear un producto asociado a la categoría
         $producto = Producto::create([
             'nom_producto' => 'Leche',
-            'id_categoria' => $idCategoria, // Asociar correctamente la categoría
+            'id_categoria' => $tipo->id_categoria,
             'precio' => 1000,
             'stock_actual' => 50,
             'stock_critico' => 5,
         ]);
-    
-        // Verificar que el producto esté relacionado con la categoría
+
+        // Validar que el producto esté relacionado con la categoría
         $this->assertTrue($tipo->productos->contains($producto));
     }
-    
 }
 
 

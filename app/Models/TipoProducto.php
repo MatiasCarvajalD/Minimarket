@@ -11,12 +11,13 @@ class TipoProducto extends Model
 
     protected $table = 'tipo_producto'; // Nombre de la tabla
     protected $primaryKey = 'id_categoria'; // Clave primaria
-    public $incrementing = false; // Porque es auto-incremental pero no usa BIGINT
-    protected $keyType = 'unsignedTinyInteger';
-    protected $fillable = ['categoria'];
+    public $incrementing = true; // Auto-incremental
+    protected $keyType = 'int'; // Tipo de la clave primaria
+    protected $fillable = ['categoria']; // Permitir asignación masiva
 
     public function productos()
     {
         return $this->hasMany(Producto::class, 'id_categoria', 'id_categoria');
     }
 }
+
