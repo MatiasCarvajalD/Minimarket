@@ -12,9 +12,13 @@ class Venta extends Model
     protected $table = 'ventas';
     protected $fillable = ['id_usuario', 'total'];
 
-    public function detalles()
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class, 'id_usuario', 'id');
+    }
+
+    public function detalleVentas()
     {
         return $this->hasMany(DetalleVenta::class, 'id_venta', 'id_venta');
     }
-}
-
+};
