@@ -2,16 +2,15 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\TipoProducto;
 
 class TipoProductoSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public function run()
     {
-        //
+        TipoProducto::create(['categoria' => 'Lácteos']);
+        TipoProducto::create(['categoria' => 'Bebidas']);
+        TipoProducto::create(['categoria' => 'Snacks']);
     }
 }
