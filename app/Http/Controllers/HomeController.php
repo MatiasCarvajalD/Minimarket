@@ -1,5 +1,18 @@
 <?php
 
-use App\Http\Controllers\ProductoController;
+namespace App\Http\Controllers;
 
-Route::get('/', [ProductoController::class, 'index'])->name('home');
+use Illuminate\Http\Request;
+
+class HomeController extends Controller
+{
+    public function index()
+    {
+        return view('inicio'); // Página protegida para usuarios autenticados
+    }
+
+    public function invitado()
+    {
+        return view('invitado'); // Página para invitados
+    }
+}
