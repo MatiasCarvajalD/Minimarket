@@ -18,7 +18,7 @@ class Usuario extends Model
         'nombre',       // Campo de nombre
         'email',        // Campo de correo
         'password',     // Contraseña encriptada
-        'rol',          // Campo adicional para roles (opcional)
+        'rol',          // Campo adicional para roles 
     ];
 
     protected $hidden = [
@@ -33,8 +33,9 @@ class Usuario extends Model
 
     public function ventas()
     {
-        return $this->hasMany(Venta::class, 'rut_usuario', 'rut_usuario');
+        return $this->hasMany(Venta::class, 'id_usuario', 'id');
     }
+
 
     public function carrito()
     {

@@ -9,16 +9,20 @@ class Carrito extends Model
 {
     use HasFactory;
 
-    protected $table = 'carrito';
-    protected $primaryKey = 'id_carrito';
+    protected $table = 'carritos';
+
+    protected $fillable = [
+        'usuario_id',
+        'total',
+    ];
 
     public function usuario()
     {
-        return $this->belongsTo(Usuario::class, 'rut_usuario', 'rut_usuario');
+        return $this->belongsTo(Usuario::class, 'usuario_id', 'id');
     }
 
-    public function detalleCarritos()
+    public function detalles()
     {
-        return $this->hasMany(DetalleCarrito::class, 'id_carrito', 'id_carrito');
+        return $this->hasMany(DetalleCarrito::class, 'carrito_id', 'id');
     }
 }

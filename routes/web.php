@@ -8,10 +8,7 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\VentaController;
 
-// Página de inicio
-Route::get('/', function () {
-    return view('home'); // Vista principal
-})->name('home');
+
 
 // Autenticación
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -24,6 +21,10 @@ Route::post('/register', [RegisterController::class, 'register']);
 // Rutas protegidas
 Route::middleware(['auth'])->group(function () {
     
+    // Página de inicio
+    Route::get('/', function () {
+        return view('home'); // Vista principal
+    })->name('home');
     // Gestión de productos
     Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
     Route::get('/productos/create', [ProductoController::class, 'create'])->name('productos.create');

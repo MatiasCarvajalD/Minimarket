@@ -9,16 +9,21 @@ class Compra extends Model
 {
     use HasFactory;
 
-    protected $table = 'compra';
-    protected $primaryKey = 'cod_compra';
+    protected $table = 'compras';
+
+    protected $fillable = [
+        'proveedor_id',
+        'total',
+        'fecha',
+    ];
 
     public function proveedor()
     {
-        return $this->belongsTo(Proveedor::class, 'rut_proveedor', 'rut_proveedor');
+        return $this->belongsTo(Proveedor::class, 'proveedor_id', 'id');
     }
 
-    public function detalleCompras()
+    public function detalles()
     {
-        return $this->hasMany(DetalleCompra::class, 'cod_compra', 'cod_compra');
+        return $this->hasMany(DetalleCompra::class, 'compra_id', 'id');
     }
 }

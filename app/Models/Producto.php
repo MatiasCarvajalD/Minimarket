@@ -12,12 +12,13 @@ class Producto extends Model
     protected $table = 'productos';
     protected $primaryKey = 'cod_producto';
     protected $fillable = [
+        'cod_producto',
         'nom_producto',
-        'id_categoria',
         'precio',
         'stock_actual',
-        'stock_critico',
+        'id_categoria',
     ];
+    
 
     public function tipoProducto()
     {

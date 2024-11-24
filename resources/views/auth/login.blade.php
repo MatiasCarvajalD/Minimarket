@@ -15,5 +15,8 @@
         </div>
         <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
     </form>
+    <a href="{{ route('register') }}">¿No tienes una cuenta? Regístrate</a>
+    <br>
+    <a href="{{ route('guest') }}" class="btn btn-outline-secondary mt-3">Iniciar Como Invitado</a>
 </div>
 @endsection
