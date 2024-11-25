@@ -16,7 +16,11 @@ class User extends Authenticatable
     protected $keyType = 'string';
 
     protected $fillable = [
-        'rut_usuario', 'nombre', 'email', 'password', 'rol',
+        'rut_usuario', 
+        'nombre_usuario', 
+        'correo', 
+        'password', 
+        'rol',
     ];
 
     protected $hidden = [
@@ -38,6 +42,11 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Producto::class, 'detalle_carrito', 'rut_usuario', 'cod_producto')
                     ->withPivot('cantidad');
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return 'correo'; // Cambia de 'email' a 'correo'
     }
 
 }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+use App\Models\Usuario; // Cambiado de User a Usuario
 
 class AuthController extends Controller
 {
@@ -17,33 +17,35 @@ class AuthController extends Controller
     // Procesar login
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->validate([
+            'correo' => ['required', 'email'], // Asegúrate de usar 'correo'
+            'password' => ['required'],
+        ]);
 
-        if (Auth::attempt($credentials)) {
-            return redirect()->intended('/')->with('success', '¡Bienvenido!');
+        if (Auth::attempt(['correo' => $credentials['correo'], 'password' => $credentials['password']])) {
+            $request->session()->regenerate();
+            return redirect()->intended('home');
         }
 
-        return back()->withErrors(['email' => 'Credenciales inválidas.'])->withInput();
+        return back()->withErrors([
+            'correo' => 'Las credenciales no coinciden con nuestros registros.',
+        ]);
     }
 
-    // Mostrar formulario de registro
-    public function showRegistrationForm()
-    {
-        return view('auth.register');
-    }
+    
 
     // Procesar registro
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:usuarios,email',
+            'nombre_usuario' => 'required|string|max:255',
+            'correo' => 'required|string|email|max:255|unique:usuarios,correo', // Cambiado a 'correo'
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
+        Usuario::create([
+            'nombre_usuario' => $validated['nombre_usuario'], // Cambiado a 'nombre_usuario'
+            'correo' => $validated['correo'], // Cambiado a 'correo'
             'password' => bcrypt($validated['password']),
         ]);
 
@@ -54,13 +56,24 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect()->route('home')->with('success', 'Has cerrado sesión.');
+        return redirect()->route('login')->with('success', 'Has cerrado sesión.'); // Cambiado de 'home' a 'login'
     }
+
     public function loginAsGuest()
     {
-        // Autenticación temporal para el invitado
-        Auth::loginUsingId(1); // Asume que el ID 1 es un usuario invitado predefinido
-        
-        return redirect()->route('home'); // Redirige al home después de iniciar sesión
+        // Buscar al usuario invitado predefinido
+        $invitado = User::where('rut_usuario', '99999999')->first();
+
+        // Autenticar al usuario invitado
+        Auth::login($invitado);
+
+        // Redirigir a la página de inicio o la ruta que elijas
+        return redirect()->route('home')->with('success', 'Has iniciado sesión como invitado.');
+}
+
+    // Mostrar formulario de registro
+    public function showRegistrationForm()
+    {
+        return view('auth.register');
     }
 }
