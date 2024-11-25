@@ -1,27 +1,23 @@
 @extends('layouts.app')
 
+@section('title', 'Registrarse')
+
 @section('content')
-<div class="container">
-    <h1>Registrarse</h1>
-    <form method="POST" action="{{ route('register') }}">
+    <h2 class="text-center">Crear Cuenta</h2>
+    <form method="POST" action="{{ route('register.submit') }}" class="mt-4">
         @csrf
         <div class="mb-3">
-            <label for="name" class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="name" name="name" required>
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" name="nombre" id="nombre" class="form-control" required>
         </div>
         <div class="mb-3">
-            <label for="correo" class="form-label">Correo Electrónico</label>
-            <input type="email" class="form-control" id="correo" name="email" required>
+            <label for="correo" class="form-label">Correo</label>
+            <input type="email" name="correo" id="correo" class="form-control" required>
         </div>
         <div class="mb-3">
             <label for="password" class="form-label">Contraseña</label>
-            <input type="password" class="form-control" id="password" name="password" required>
+            <input type="password" name="password" id="password" class="form-control" required>
         </div>
-        <div class="mb-3">
-            <label for="password_confirmation" class="form-label">Confirmar Contraseña</label>
-            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Registrarse</button>
+        <button type="submit" class="btn btn-primary w-100">Registrarse</button>
     </form>
-</div>
 @endsection

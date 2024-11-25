@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Usuario; // Cambiado de User a Usuario
+use App\Models\User; 
 
 class AuthController extends Controller
 {
@@ -16,21 +16,24 @@ class AuthController extends Controller
 
     // Procesar login
     public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'correo' => ['required', 'email'], // Asegúrate de usar 'correo'
-            'password' => ['required'],
-        ]);
+{
+    $credentials = $request->validate([
+        'correo' => 'required|email', // Valida el campo 'correo'
+        'password' => 'required',    // Valida el campo 'password'
+    ]);
 
-        if (Auth::attempt(['correo' => $credentials['correo'], 'password' => $credentials['password']])) {
-            $request->session()->regenerate();
-            return redirect()->intended('home');
-        }
-
-        return back()->withErrors([
-            'correo' => 'Las credenciales no coinciden con nuestros registros.',
-        ]);
+    // Intenta autenticar al usuario
+    if (Auth::attempt(['correo' => $credentials['correo'], 'password' => $credentials['password']])) {
+        $request->session()->regenerate(); // Regenera la sesión si el login es exitoso
+        return redirect()->intended('home'); // Redirige al home
     }
+
+    // Si fallan las credenciales, regresa con un error
+    return back()->withErrors([
+        'correo' => 'Las credenciales no coinciden con nuestros registros.',
+    ]);
+}
+
 
     
 
@@ -39,13 +42,13 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'nombre_usuario' => 'required|string|max:255',
-            'correo' => 'required|string|email|max:255|unique:usuarios,correo', // Cambiado a 'correo'
+            'correo' => 'required|string|email|max:255|unique:usuarios,correo',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        Usuario::create([
-            'nombre_usuario' => $validated['nombre_usuario'], // Cambiado a 'nombre_usuario'
-            'correo' => $validated['correo'], // Cambiado a 'correo'
+        User::create([
+            'nombre_usuario' => $validated['nombre_usuario'], 
+            'correo' => $validated['correo'], 
             'password' => bcrypt($validated['password']),
         ]);
 
@@ -56,7 +59,7 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect()->route('login')->with('success', 'Has cerrado sesión.'); // Cambiado de 'home' a 'login'
+        return redirect()->route('login')->with('success', 'Has cerrado sesión.');
     }
 
     public function loginAsGuest()

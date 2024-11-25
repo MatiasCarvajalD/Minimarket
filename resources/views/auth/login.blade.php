@@ -1,23 +1,19 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="container">
-    <h1>Iniciar Sesión</h1>
-    <form method="POST" action="{{ route('login.submit') }}">
-        @csrf
-        <div>
-            <label for="correo">Correo electrónico</label>
-            <input type="email" id="correo" name="email" required>
-        </div>
-        <div>
-            <label for="password">Contraseña</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <button type="submit">Iniciar sesión</button>
-    </form>
-    <a href="{{ route('register') }}">¿No tienes una cuenta? Regístrate</a>
-    <br>
-    <a href="{{ route('guest.login') }}" class="btn btn-secondary">Entrar como Invitado</a>
+@section('title', 'Iniciar Sesión')
 
-</div>
+@section('content')
+    <h2 class="text-center">Iniciar Sesión</h2>
+    <form method="POST" action="{{ route('login.submit') }}" class="mt-4">
+        @csrf
+        <div class="mb-3">
+            <label for="correo" class="form-label">Correo</label>
+            <input type="email" name="correo" id="correo" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Contraseña</label>
+            <input type="password" name="password" id="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-success w-100">Iniciar Sesión</button>
+    </form>
 @endsection

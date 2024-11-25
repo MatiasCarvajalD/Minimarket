@@ -8,7 +8,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        return view('inicio'); // Página protegida para usuarios autenticados
+        return view('auth/home'); // Página protegida para usuarios autenticados
     }
 
     public function invitado()

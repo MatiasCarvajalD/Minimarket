@@ -15,12 +15,12 @@ class ProductoController extends Controller
         return view('productos.index', compact('productos'));
     }
 
-    // Mostrar detalles de un producto
     public function show($id)
     {
         $producto = Producto::findOrFail($id);
-        return view('productos.detalle', compact('producto'));
+        return view('productos.show', compact('producto'));
     }
+    
 
     // Mostrar formulario para crear un producto
     public function create()

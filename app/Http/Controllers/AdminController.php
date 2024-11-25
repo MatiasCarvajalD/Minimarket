@@ -35,4 +35,11 @@ class AdminController extends Controller
 
         return redirect()->route('admin.users')->with('success', 'Usuario eliminado correctamente.');
     }
+
+    public function listarPedidos()
+    {
+        $pedidos = Venta::with('user')->orderBy('created_at', 'desc')->get();
+        return view('admin.pedidos.index', compact('pedidos'));
+    }
+
 }

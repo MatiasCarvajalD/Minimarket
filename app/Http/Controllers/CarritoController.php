@@ -84,6 +84,53 @@ class CarritoController extends Controller
         return redirect()->route('carrito.index')->with('success', 'Carrito vaciado.');
     }
 
+    public function checkout()
+    {
+        $carrito = Carrito::with('productos')->where('user_id', auth()->id())->first();
+        if (!$carrito || $carrito->productos->isEmpty()) {
+            return redirect()->route('carrito.index')->with('error', 'El carrito está vacío.');
+        }
+
+        return view('carrito.checkout', compact('carrito'));
+    }
+
+    public function procesarCheckout(Request $request)
+    {
+        $request->validate([
+            'direccion' => 'required|string|max:255',
+            'metodo_pago' => 'required|string',
+        ]);
+
+        $carrito = Carrito::with('productos')->where('user_id', auth()->id())->first();
+        if (!$carrito || $carrito->productos->isEmpty()) {
+            return redirect()->route('carrito.index')->with('error', 'El carrito está vacío.');
+        }
+
+        DB::transaction(function () use ($carrito, $request) {
+            $venta = Venta::create([
+                'user_id' => auth()->id(),
+                'direccion' => $request->direccion,
+                'metodo_pago' => $request->metodo_pago,
+                'estado' => 'pendiente',
+                'total' => $carrito->productos->sum(fn($p) => $p->pivot->cantidad * $p->precio),
+            ]);
+
+            foreach ($carrito->productos as $producto) {
+                DetalleVenta::create([
+                    'venta_id' => $venta->id,
+                    'producto_id' => $producto->id,
+                    'cantidad' => $producto->pivot->cantidad,
+                    'precio_unitario' => $producto->precio,
+                ]);
+                $producto->decrement('stock', $producto->pivot->cantidad);
+            }
+
+            $carrito->productos()->detach();
+        });
+
+        return redirect()->route('home')->with('success', 'Compra realizada con éxito.');
+    }
+
 }
 
 
