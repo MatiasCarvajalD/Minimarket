@@ -17,6 +17,7 @@
     </form>
     <a href="{{ route('register') }}">¿No tienes una cuenta? Regístrate</a>
     <br>
-    <a href="{{ route('guest') }}" class="btn btn-outline-secondary mt-3">Iniciar Como Invitado</a>
+    <a href="{{ route('guest.login') }}" class="btn btn-secondary">Entrar como Invitado</a>
+
 </div>
 @endsection

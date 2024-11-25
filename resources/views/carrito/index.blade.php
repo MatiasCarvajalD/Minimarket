@@ -1,50 +1,56 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Carrito de Compras</h1>
+<div class="container mt-5">
+    <h1 class="mb-4">Carrito de Compras</h1>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+    @if(session()->has('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
     @endif
 
-    @if(count($carrito) > 0)
-        <table class="table">
+    @if(empty($carrito) || count($carrito) === 0)
+        <p>No hay productos en el carrito.</p>
+    @else
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Producto</th>
                     <th>Precio</th>
                     <th>Cantidad</th>
-                    <th>Subtotal</th>
+                    <th>Total</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($carrito as $id => $item)
+                @foreach($carrito as $id => $producto)
                     <tr>
-                        <td>{{ $item['nombre'] }}</td>
-                        <td>{{ number_format($item['precio'], 2) }} CLP</td>
-                        <td>{{ $item['cantidad'] }}</td>
-                        <td>{{ number_format($item['precio'] * $item['cantidad'], 2) }} CLP</td>
+                        <td>{{ $producto['nombre'] }}</td>
+                        <td>${{ number_format($producto['precio'], 0, ',', '.') }}</td>
+                        <td>{{ $producto['cantidad'] }}</td>
+                        <td>${{ number_format($producto['precio'] * $producto['cantidad'], 0, ',', '.') }}</td>
                         <td>
-                            <form method="POST" action="{{ route('carrito.remove', $id) }}">
+                            <form action="{{ route('carrito.remove', $id) }}" method="POST" class="d-inline">
                                 @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </button>
                             </form>
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
-        <h3>Total: {{ number_format($total, 2) }} CLP</h3>
-        <form method="POST" action="{{ route('carrito.clear') }}">
+
+        <h4 class="mt-4">Total: ${{ number_format($total, 0, ',', '.') }}</h4>
+
+        <form action="{{ route('carrito.clear') }}" method="POST" class="mt-3">
             @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-warning">Vaciar Carrito</button>
+            <button type="submit" class="btn btn-warning">
+                <i class="fas fa-trash-alt"></i> Vaciar Carrito
+            </button>
         </form>
-    @else
-        <p>No hay productos en el carrito.</p>
     @endif
 </div>
 @endsection

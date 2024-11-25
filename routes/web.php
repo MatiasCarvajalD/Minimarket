@@ -1,55 +1,49 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\ProductoController;
-use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\CarritoController;
+use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VentaController;
+use App\Http\Controllers\AdminUsuarioController;
 
+// RUTAS PÚBLICAS
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login'); // Login
+Route::post('/login', [AuthController::class, 'login']); // Procesar Login
+Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register'); // Registro
+Route::post('/register', [AuthController::class, 'register']); // Procesar Registro
 
+// Inicio como Invitado
+Route::get('/guest', function () {
+    session(['guest' => true]);
+    return redirect()->route('home')->with('message', 'Has ingresado como invitado.');
+})->name('guest.login');
 
-// Autenticación
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register']);
-
-// Rutas protegidas
-Route::middleware(['auth'])->group(function () {
-    
-    // Página de inicio
-    Route::get('/', function () {
-        return view('home'); // Vista principal
-    })->name('home');
-    // Gestión de productos
-    Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
-    Route::get('/productos/create', [ProductoController::class, 'create'])->name('productos.create');
-    Route::post('/productos', [ProductoController::class, 'store'])->name('productos.store');
-    Route::get('/productos/{id}/edit', [ProductoController::class, 'edit'])->name('productos.edit');
-    Route::put('/productos/{id}', [ProductoController::class, 'update'])->name('productos.update');
-    Route::delete('/productos/{id}', [ProductoController::class, 'destroy'])->name('productos.destroy');
-
-    // Gestión de usuarios
-    Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
-    Route::get('/usuarios/create', [UsuarioController::class, 'create'])->name('usuarios.create');
-    Route::post('/usuarios', [UsuarioController::class, 'store'])->name('usuarios.store');
-    Route::get('/usuarios/{id}/edit', [UsuarioController::class, 'edit'])->name('usuarios.edit');
-    Route::put('/usuarios/{id}', [UsuarioController::class, 'update'])->name('usuarios.update');
-    Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy'])->name('usuarios.destroy');
-
-    // Carrito de compras
-    Route::get('/carrito', [CarritoController::class, 'index'])->name('carrito.index');
-    Route::post('/carrito/add', [CarritoController::class, 'add'])->name('carrito.add');
-    Route::post('/carrito/remove/{id}', [CarritoController::class, 'remove'])->name('carrito.remove');
-    Route::post('/carrito/clear', [CarritoController::class, 'clear'])->name('carrito.clear');
-
-    // Gestión de ventas
-    Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
-    Route::post('/ventas', [VentaController::class, 'store'])->name('ventas.store');
+// RUTAS PARA INVITADOS Y USUARIOS LOGUEADOS
+Route::middleware(['guest.auth'])->group(function () {
+    Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index'); // Lista de productos
+    Route::get('/carrito', [CarritoController::class, 'index'])->name('carrito.index'); // Ver carrito
 });
 
+// RUTAS PARA USUARIOS LOGUEADOS
+Route::middleware(['auth'])->group(function () {
+    Route::post('/carrito/add', [CarritoController::class, 'add'])->name('carrito.add'); // Agregar producto al carrito
+    Route::post('/carrito/remove/{id}', [CarritoController::class, 'remove'])->name('carrito.remove'); // Eliminar producto del carrito
+    Route::post('/carrito/clear', [CarritoController::class, 'clear'])->name('carrito.clear'); // Vaciar carrito
+
+    Route::get('/perfil', [AuthController::class, 'showProfile'])->name('perfil'); // Perfil del usuario
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout'); // Cerrar sesión
+});
+
+
+// RUTAS PARA ADMINISTRADORES
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin', [AdminUsuarioController::class, 'index'])->name('admin.index'); // Panel de administración
+    Route::get('/admin/usuarios', [AdminUsuarioController::class, 'index'])->name('admin.usuarios.index'); // Lista de usuarios
+    Route::get('/admin/usuarios/{id}', [AdminUsuarioController::class, 'show'])->name('admin.usuarios.show'); // Detalle de usuario
+    Route::post('/admin/usuarios', [AdminUsuarioController::class, 'store'])->name('admin.usuarios.store'); // Crear usuario
+    Route::put('/admin/usuarios/{id}', [AdminUsuarioController::class, 'update'])->name('admin.usuarios.update'); // Actualizar usuario
+    Route::delete('/admin/usuarios/{id}', [AdminUsuarioController::class, 'destroy'])->name('admin.usuarios.destroy'); // Eliminar usuario
+});
 

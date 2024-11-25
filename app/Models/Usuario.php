@@ -39,6 +39,8 @@ class Usuario extends Model
 
     public function carrito()
     {
-        return $this->hasOne(Carrito::class, 'rut_usuario', 'rut_usuario');
+        return $this->belongsToMany(Producto::class, 'detalle_carrito', 'rut_usuario', 'cod_producto')
+                    ->withPivot('cantidad');
     }
+
 }
