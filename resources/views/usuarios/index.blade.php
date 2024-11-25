@@ -14,14 +14,14 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($usuarios as $usuario)
+            @foreach ($user as $user)
             <tr>
-                <td>{{ $usuario->name }}</td>
-                <td>{{ $usuario->email }}</td>
-                <td>{{ $usuario->rol }}</td>
+                <td>{{ $user->name }}</td>
+                <td>{{ $user->email }}</td>
+                <td>{{ $user->rol }}</td>
                 <td>
-                    <a href="{{ route('usuarios.edit', $usuario->id) }}" class="btn btn-warning btn-sm">Editar</a>
-                    <form action="{{ route('usuarios.destroy', $usuario->id) }}" method="POST" style="display:inline;">
+                    <a href="{{ route('usuarios.edit', $user->id) }}" class="btn btn-warning btn-sm">Editar</a>
+                    <form action="{{ route('usuarios.destroy', $user->id) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>

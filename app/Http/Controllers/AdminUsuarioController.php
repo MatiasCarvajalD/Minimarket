@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Usuario;
+use App\Models\User;
 
 class AdminUsuarioController extends Controller
 {
@@ -24,7 +24,7 @@ class AdminUsuarioController extends Controller
     // Actualizar datos de un usuario
     public function update(Request $request, $id)
     {
-        $usuario = Usuario::findOrFail($id);
+        $usuario = User::findOrFail($id);
         $usuario->update($request->all());
 
         return redirect()->route('admin.usuarios.index')->with('success', 'Usuario actualizado correctamente.');
@@ -33,7 +33,7 @@ class AdminUsuarioController extends Controller
     // Eliminar un usuario
     public function destroy($id)
     {
-        $usuario = Usuario::findOrFail($id);
+        $usuario = User::findOrFail($id);
         $usuario->delete();
 
         return redirect()->route('admin.usuarios.index')->with('success', 'Usuario eliminado correctamente.');

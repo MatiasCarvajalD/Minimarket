@@ -56,4 +56,11 @@ class AuthController extends Controller
         Auth::logout();
         return redirect()->route('home')->with('success', 'Has cerrado sesión.');
     }
+    public function loginAsGuest()
+    {
+        // Autenticación temporal para el invitado
+        Auth::loginUsingId(1); // Asume que el ID 1 es un usuario invitado predefinido
+        
+        return redirect()->route('home'); // Redirige al home después de iniciar sesión
+    }
 }

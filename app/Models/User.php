@@ -2,28 +2,25 @@
 
 namespace App\Models;
 
-namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class Usuario extends Model
+class User extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
-    protected $table = 'usuarios'; // Tabla asociada
-    protected $primaryKey = 'id'; // Clave primaria
+    protected $table = 'usuarios';
+    protected $primaryKey = 'rut_usuario'; 
+    public $incrementing = false; 
+    protected $keyType = 'string';
 
     protected $fillable = [
-        'nombre',       // Campo de nombre
-        'email',        // Campo de correo
-        'password',     // Contraseña encriptada
-        'rol',          // Campo adicional para roles 
+        'rut_usuario', 'nombre', 'email', 'password', 'rol',
     ];
 
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password', 'remember_token',
     ];
 
     protected $casts = [

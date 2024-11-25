@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Usuario;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class UsuarioController extends Controller
 {
     public function index()
     {
-        $usuarios = Usuario::all();
+        $usuarios = User::all();
         return view('usuarios.index', compact('usuarios'));
     }
 
@@ -26,7 +26,7 @@ class UsuarioController extends Controller
             'password' => 'required|string|min:8',
         ]);
 
-        Usuario::create([
+        User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
@@ -37,13 +37,13 @@ class UsuarioController extends Controller
 
     public function edit($id)
     {
-        $usuario = Usuario::findOrFail($id);
+        $usuario = User::findOrFail($id);
         return view('usuarios.edit', compact('usuario'));
     }
 
     public function update(Request $request, $id)
     {
-        $usuario = Usuario::findOrFail($id);
+        $usuario = User::findOrFail($id);
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -56,7 +56,7 @@ class UsuarioController extends Controller
 
     public function destroy($id)
     {
-        $usuario = Usuario::findOrFail($id);
+        $usuario = User::findOrFail($id);
         $usuario->delete();
         return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado exitosamente.');
     }
