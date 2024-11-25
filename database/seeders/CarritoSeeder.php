@@ -11,7 +11,7 @@ class CarritoSeeder extends Seeder
     {
         DB::table('carrito')->insert([
             [
-                'id_carrito'
+                'id_carrito',
                 'rut_usuario' => 12345678, // Relación válida con la tabla usuarios
                 'cod_producto' => 1,       // Relación válida con la tabla productos
                 'cantidad' => 3,
