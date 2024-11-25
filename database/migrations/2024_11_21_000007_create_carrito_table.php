@@ -10,11 +10,15 @@ class CreateCarritoTable extends Migration
     {
         Schema::create('carrito', function (Blueprint $table) {
             $table->id('id_carrito');
-            $table->bigInteger('rut_usuario');
+            $table->unsignedBigInteger('rut_usuario'); // Clave foránea hacia usuarios
+            $table->unsignedBigInteger('cod_producto'); // Clave foránea hacia productos
+            $table->integer('cantidad');
             $table->timestamps();
-
+        
             $table->foreign('rut_usuario')->references('rut_usuario')->on('usuarios')->onDelete('cascade');
+            $table->foreign('cod_producto')->references('cod_producto')->on('productos')->onDelete('cascade');
         });
+        
     }
 
     public function down()

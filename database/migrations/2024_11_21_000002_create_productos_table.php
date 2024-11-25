@@ -12,7 +12,7 @@ class CreateProductosTable extends Migration
             $table->id('cod_producto');
             $table->string('nom_producto', 15);
             $table->string('marca', 15)->nullable();
-            $table->string('descripcion', 30)->nullable();
+            $table->string('descripcion', 255)->nullable();
             $table->integer('precio');
             $table->unsignedTinyInteger('id_categoria');
             $table->unsignedInteger('stock_actual');

@@ -11,6 +11,7 @@ class TipoProductoSeeder extends Seeder
     {
         TipoProducto::create(['categoria' => 'Lácteos']);
         TipoProducto::create(['categoria' => 'Bebidas']);
-        TipoProducto::create(['categoria' => 'Snacks']);
+        TipoProducto::create(['categoria' => 'Cecinas']);
+        TipoProducto::create(['categoria' => 'Galletas']);
     }
 }

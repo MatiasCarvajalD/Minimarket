@@ -10,13 +10,14 @@ class CreateVentasTable extends Migration
     {
         Schema::create('ventas', function (Blueprint $table) {
             $table->id('id_venta');
-            $table->bigInteger('rut_usuario');
+            $table->unsignedBigInteger('rut_usuario');
             $table->unsignedTinyInteger('tipo_entrega');
             $table->boolean('entrega_completada');
             $table->date('fecha');
             $table->timestamps();
 
             $table->foreign('rut_usuario')->references('rut_usuario')->on('usuarios')->onDelete('cascade');
+
         });
     }
 
