@@ -4,16 +4,22 @@
 
 @section('content')
     <h2 class="text-center">Iniciar Sesión</h2>
-    <form method="POST" action="{{ route('login.submit') }}" class="mt-4">
+    @if ($errors->has('login'))
+    <div class="alert alert-danger">
+        {{ $errors->first('login') }}
+    </div>
+    @endif
+
+    <form method="POST" action="{{ route('login.submit') }}">
         @csrf
-        <div class="mb-3">
-            <label for="correo" class="form-label">Correo</label>
-            <input type="email" name="correo" id="correo" class="form-control" required>
+        <div>
+            <label for="correo">Correo</label>
+            <input type="email" id="correo" name="correo" value="{{ old('correo') }}" required>
         </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Contraseña</label>
-            <input type="password" name="password" id="password" class="form-control" required>
+        <div>
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" name="password" required>
         </div>
-        <button type="submit" class="btn btn-success w-100">Iniciar Sesión</button>
+        <button type="submit">Iniciar Sesión</button>
     </form>
 @endsection

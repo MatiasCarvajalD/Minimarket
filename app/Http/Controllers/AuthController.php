@@ -8,34 +8,27 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    // Mostrar formulario de login
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
-    // Procesar login
     public function login(Request $request)
-{
-    $credentials = $request->validate([
-        'correo' => 'required|email', // Valida el campo 'correo'
-        'password' => 'required',    // Valida el campo 'password'
-    ]);
+    {
+        $request->validate([
+            'correo' => 'required|email',
+            'password' => 'required',
+        ]);
 
-    // Intenta autenticar al usuario
-    if (Auth::attempt(['correo' => $credentials['correo'], 'password' => $credentials['password']])) {
-        $request->session()->regenerate(); // Regenera la sesión si el login es exitoso
-        return redirect()->intended('home'); // Redirige al home
+        if (Auth::attempt($request->only('correo', 'password'))) {
+            return redirect()->route('home'); // Redirige al home si las credenciales son correctas
+        }
+
+        // Si las credenciales no coinciden
+        return back()->withErrors([
+            'login' => 'Las credenciales no coinciden. Por favor, inténtalo de nuevo.',
+        ])->withInput(); // Retorna los datos ingresados para que se mantengan en el formulario
     }
-
-    // Si fallan las credenciales, regresa con un error
-    return back()->withErrors([
-        'correo' => 'Las credenciales no coinciden con nuestros registros.',
-    ]);
-}
-
-
-    
 
     // Procesar registro
     public function register(Request $request)

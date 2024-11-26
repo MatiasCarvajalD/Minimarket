@@ -46,7 +46,11 @@ class User extends Authenticatable
 
     public function getAuthIdentifierName()
     {
-        return 'correo'; // Cambia de 'email' a 'correo'
+        return 'correo';
+    }
+    public function username()
+    {
+        return 'correo'; // Campo en la base de datos que usaremos para autenticarnos
     }
 
 }

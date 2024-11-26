@@ -28,7 +28,14 @@
                 <ul class="navbar-nav">
                     @auth
                         <li class="nav-item"><a class="nav-link text-white" href="{{ route('carrito.index') }}">Carrito</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="{{ route('logout') }}">Cerrar Sesión</a></li>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                            
+                        </form>
+                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            Cerrar Sesión
+                        </a>
+                        
                     @else
                         <li class="nav-item"><a class="nav-link text-white" href="{{ route('login') }}">Iniciar Sesión</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="{{ route('register') }}">Registrarse</a></li>

@@ -3,90 +3,79 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\Models\Carrito;
+use App\Models\DetalleCarrito;
 use App\Models\Producto;
+use App\Models\Venta;
+use App\Models\DetalleVenta;
+use App\Models\DetalleCheckout;
 
 class CarritoController extends Controller
 {
+    // Mostrar los productos en el carrito
     public function index()
     {
-        if (session()->has('guest')) {
-            $carrito = session()->get('carrito', []);
-        } elseif (Auth::check()) {
-            $carrito = Auth::user()->carrito; // Relación con carrito si existe en el modelo Usuario
-        } else {
-            return redirect('/login')->with('message', 'Debes iniciar sesión o entrar como invitado.');
-        }
-
-        $total = collect($carrito)->sum(function ($item) {
-            return $item['precio'] * $item['cantidad'];
-        });
-
-        return view('carrito.index', compact('carrito', 'total'));
+        $carrito = Carrito::with('productos')->where('rut_usuario', auth()->id())->first();
+        return view('carrito.index', compact('carrito'));
     }
 
+    // Añadir un producto al carrito
     public function add(Request $request)
     {
-        $producto = Producto::findOrFail($request->input('producto_id'));
-        $cantidad = $request->input('cantidad', 1);
+        $request->validate([
+            'cod_producto' => 'required|exists:productos,cod_producto',
+            'cantidad' => 'required|integer|min:1',
+        ]);
 
-        if (session()->has('guest')) {
-            $carrito = session()->get('carrito', []);
-            if (isset($carrito[$producto->cod_producto])) {
-                $carrito[$producto->cod_producto]['cantidad'] += $cantidad;
-            } else {
-                $carrito[$producto->cod_producto] = [
-                    'nombre' => $producto->nom_producto,
-                    'precio' => $producto->precio,
-                    'cantidad' => $cantidad,
-                ];
-            }
-            session()->put('carrito', $carrito);
-        } elseif (Auth::check()) {
-            // Lógica para usuarios logueados
+        $carrito = Carrito::firstOrCreate(['rut_usuario' => auth()->id()]);
+
+        // Verificar si ya existe el producto en el carrito
+        $detalle = DetalleCarrito::where('id_carrito', $carrito->id_carrito)
+            ->where('cod_producto', $request->cod_producto)
+            ->first();
+
+        if ($detalle) {
+            // Incrementar cantidad si ya existe
+            $detalle->cantidad += $request->cantidad;
+            $detalle->save();
+        } else {
+            // Agregar nuevo producto
+            DetalleCarrito::create([
+                'id_carrito' => $carrito->id_carrito,
+                'cod_producto' => $request->cod_producto,
+                'cantidad' => $request->cantidad,
+            ]);
         }
 
-        return redirect()->route('carrito.index')->with('success', 'Producto agregado al carrito.');
+        return redirect()->route('carrito.index')->with('success', 'Producto añadido al carrito.');
     }
 
+    // Eliminar un producto del carrito
     public function remove($id)
     {
-        if (session()->has('guest')) {
-            // Manejo del carrito en sesión (para invitados)
-            $carrito = session()->get('carrito', []);
-            if (isset($carrito[$id])) {
-                unset($carrito[$id]); // Eliminar el producto del carrito
-                session()->put('carrito', $carrito);
-            }
-        } elseif (Auth::check()) {
-            // Manejo del carrito en base de datos (para usuarios logueados)
-            $usuario = Auth::user();
-            $producto = $usuario->carrito()->where('cod_producto', $id)->first();
-            if ($producto) {
-                $producto->pivot->delete(); // Eliminar producto de la relación en DB
-            }
-        }
+        $detalle = DetalleCarrito::findOrFail($id);
+        $detalle->delete();
 
         return redirect()->route('carrito.index')->with('success', 'Producto eliminado del carrito.');
     }
 
+    // Vaciar el carrito
     public function clear()
     {
-        if (session()->has('guest')) {
-            // Manejo del carrito en sesión (para invitados)
-            session()->forget('carrito'); // Eliminar todo el carrito de la sesión
-        } elseif (Auth::check()) {
-            // Manejo del carrito en base de datos (para usuarios logueados)
-            $usuario = Auth::user();
-            $usuario->carrito()->detach(); // Eliminar todos los productos de la relación
+        $carrito = Carrito::where('rut_usuario', auth()->id())->first();
+        if ($carrito) {
+            $carrito->productos()->detach(); // Eliminar todos los productos del carrito
         }
 
         return redirect()->route('carrito.index')->with('success', 'Carrito vaciado.');
     }
 
+    // Mostrar la página de checkout
     public function checkout()
     {
-        $carrito = Carrito::with('productos')->where('user_id', auth()->id())->first();
+        $carrito = Carrito::with('productos')->where('rut_usuario', auth()->id())->first();
+
         if (!$carrito || $carrito->productos->isEmpty()) {
             return redirect()->route('carrito.index')->with('error', 'El carrito está vacío.');
         }
@@ -94,6 +83,7 @@ class CarritoController extends Controller
         return view('carrito.checkout', compact('carrito'));
     }
 
+    // Procesar el checkout
     public function procesarCheckout(Request $request)
     {
         $request->validate([
@@ -101,36 +91,41 @@ class CarritoController extends Controller
             'metodo_pago' => 'required|string',
         ]);
 
-        $carrito = Carrito::with('productos')->where('user_id', auth()->id())->first();
-        if (!$carrito || $carrito->productos->isEmpty()) {
-            return redirect()->route('carrito.index')->with('error', 'El carrito está vacío.');
-        }
-
-        DB::transaction(function () use ($carrito, $request) {
+        DB::transaction(function () use ($request) {
+            // Crear la venta
             $venta = Venta::create([
-                'user_id' => auth()->id(),
+                'rut_usuario' => auth()->id(),
+                'tipo_entrega' => 1, // Ejemplo: 1 para delivery
+                'entrega_completada' => 0, // Inicialmente no completada
+                'fecha' => now(),
+            ]);
+
+            // Guardar los detalles del checkout
+            DetalleCheckout::create([
+                'id_venta' => $venta->id_venta,
                 'direccion' => $request->direccion,
                 'metodo_pago' => $request->metodo_pago,
-                'estado' => 'pendiente',
-                'total' => $carrito->productos->sum(fn($p) => $p->pivot->cantidad * $p->precio),
             ]);
+
+            // Guardar los detalles de la venta y reducir el stock
+            $carrito = Carrito::with('productos')->where('rut_usuario', auth()->id())->first();
 
             foreach ($carrito->productos as $producto) {
                 DetalleVenta::create([
-                    'venta_id' => $venta->id,
-                    'producto_id' => $producto->id,
+                    'id_venta' => $venta->id_venta,
+                    'cod_producto' => $producto->cod_producto,
                     'cantidad' => $producto->pivot->cantidad,
-                    'precio_unitario' => $producto->precio,
+                    'valor_unidad' => $producto->precio,
                 ]);
-                $producto->decrement('stock', $producto->pivot->cantidad);
+
+                // Reducir el stock del producto
+                $producto->decrement('stock_actual', $producto->pivot->cantidad);
             }
 
+            // Vaciar el carrito después de procesar la venta
             $carrito->productos()->detach();
         });
 
         return redirect()->route('home')->with('success', 'Compra realizada con éxito.');
     }
-
 }
-
-
