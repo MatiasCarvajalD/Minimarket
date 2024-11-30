@@ -1,19 +1,28 @@
 @extends('layouts.app')
 
+@section('title', 'Editar Usuario')
+
 @section('content')
-<div class="container">
-    <h1>Editar Usuario</h1>
-    <form action="{{ route('admin.usuarios.update', $user->id) }}" method="POST">
-        @csrf
-        <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="nombre" name="nombre" value="{{ $user->nombre }}" required>
-        </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Correo Electrónico</label>
-            <input type="email" class="form-control" id="email" name="email" value="{{ $user->email }}" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-    </form>
-</div>
+<h1>Editar Usuario</h1>
+<form action="{{ route('usuarios.update', $usuario->rut_usuario) }}" method="POST">
+    @csrf
+    @method('PUT')
+    <div class="form-group">
+        <label for="nombre_usuario">Nombre</label>
+        <input type="text" name="nombre_usuario" id="nombre_usuario" class="form-control" value="{{ $usuario->nombre_usuario }}" required>
+    </div>
+    <div class="form-group">
+        <label for="correo">Correo</label>
+        <input type="email" name="correo" id="correo" class="form-control" value="{{ $usuario->correo }}" required>
+    </div>
+    <div class="form-group">
+        <label for="rol">Rol</label>
+        <select name="rol" id="rol" class="form-control">
+            <option value="admin" {{ $usuario->rol == 'admin' ? 'selected' : '' }}>Administrador</option>
+            <option value="usuario" {{ $usuario->rol == 'usuario' ? 'selected' : '' }}>Usuario</option>
+            <option value="invitado" {{ $usuario->rol == 'invitado' ? 'selected' : '' }}>Invitado</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+</form>
 @endsection

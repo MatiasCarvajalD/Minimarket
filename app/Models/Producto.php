@@ -11,35 +11,35 @@ class Producto extends Model
 
     protected $table = 'productos';
     protected $primaryKey = 'cod_producto';
+
     protected $fillable = [
-        'cod_producto',
         'nom_producto',
+        'descripcion',
+        'marca',
         'precio',
         'stock_actual',
+        'stock_critico',
         'id_categoria',
     ];
-    
 
-    public function tipoProducto()
+    public function categoria()
     {
-        return $this->belongsTo(TipoProducto::class, 'id_categoria', 'id_categoria');
+        return $this->belongsTo(TipoProducto::class, 'id_categoria');
     }
 
-    public function detalleVentas()
+    public function carritos()
+    {
+        return $this->hasMany(Carrito::class, 'cod_producto', 'cod_producto');
+    }
+
+    public function ventas()
     {
         return $this->hasMany(DetalleVenta::class, 'cod_producto', 'cod_producto');
     }
 
-    public function detalleCarritos()
-    {
-        return $this->hasMany(DetalleCarrito::class, 'cod_producto', 'cod_producto');
-    }
-
-    public function detalleCompras()
+    public function compras()
     {
         return $this->hasMany(DetalleCompra::class, 'cod_producto', 'cod_producto');
     }
 }
-
-
 

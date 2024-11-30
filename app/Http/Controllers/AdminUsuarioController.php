@@ -2,40 +2,43 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Usuario;
+use App\Models\Producto;
+use App\Models\Venta;
 use Illuminate\Http\Request;
-use App\Models\User;
 
-class AdminUsuarioController extends Controller
+class AdminController extends Controller
 {
-    // Mostrar lista de usuarios
-    public function index()
+    public function dashboard()
     {
-        $usuarios = Usuario::all();
+        $totalUsuarios = Usuario::count();
+        $totalVentas = Venta::sum('total');
+        $productosCriticos = Producto::whereColumn('stock_actual', '<=', 'stock_critico')->count();
+
+        return view('admin.dashboard', compact('totalUsuarios', 'totalVentas', 'productosCriticos'));
+    }
+        public function index()
+    {
+        $usuarios = User::all();
         return view('admin.usuarios.index', compact('usuarios'));
     }
 
-    // Mostrar formulario de edición de un usuario
-    public function edit($id)
+    public function edit($rut_usuario)
     {
-        $usuario = Usuario::findOrFail($id);
+        $usuario = User::findOrFail($rut_usuario);
         return view('admin.usuarios.edit', compact('usuario'));
     }
 
-    // Actualizar datos de un usuario
-    public function update(Request $request, $id)
+    public function update(Request $request, $rut_usuario)
     {
-        $usuario = User::findOrFail($id);
+        $usuario = User::findOrFail($rut_usuario);
+        $request->validate([
+            'nombre_usuario' => 'required|string|max:255',
+            'correo' => 'required|email|max:255',
+            'rol' => 'required|in:admin,usuario,invitado',
+        ]);
         $usuario->update($request->all());
-
-        return redirect()->route('admin.usuarios.index')->with('success', 'Usuario actualizado correctamente.');
+        return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado correctamente.');
     }
 
-    // Eliminar un usuario
-    public function destroy($id)
-    {
-        $usuario = User::findOrFail($id);
-        $usuario->delete();
-
-        return redirect()->route('admin.usuarios.index')->with('success', 'Usuario eliminado correctamente.');
-    }
 }

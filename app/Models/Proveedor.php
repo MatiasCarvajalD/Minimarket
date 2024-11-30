@@ -9,17 +9,19 @@ class Proveedor extends Model
 {
     use HasFactory;
 
-    protected $table = 'proveedores';
+    protected $table = 'proveedor';
+    protected $primaryKey = 'id_proveedor';
 
     protected $fillable = [
-        'nombre',
-        'direccion',
-        'telefono',
-        'email',
+        'rut_proveedor',
+        'nom_proveedor',
+        'telefono_proveedor',
+        'direccion_proveedor',
+        'correo_proveedor',
     ];
 
     public function compras()
     {
-        return $this->hasMany(Compra::class, 'proveedor_id', 'id');
+        return $this->hasMany(DetalleCompra::class, 'id_proveedor', 'id_proveedor');
     }
 }

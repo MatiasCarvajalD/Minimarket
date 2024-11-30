@@ -4,20 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminUsuarioController;
 use App\Http\Controllers\VentaController;
 
-// Gestión de usuarios y administración
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
-    Route::resource('usuarios', AdminUsuarioController::class, [
-        'names' => [
-            'index' => 'admin.usuarios.index',
-            'create' => 'admin.usuarios.create',
-            'store' => 'admin.usuarios.store',
-            'edit' => 'admin.usuarios.edit',
-            'update' => 'admin.usuarios.update',
-            'destroy' => 'admin.usuarios.destroy',
-        ],
-    ]);
-
-    // Gestión de pedidos
-    Route::get('/pedidos', [VentaController::class, 'indexPedidos'])->name('admin.pedidos.index');
-    Route::put('/pedidos/{id}', [VentaController::class, 'actualizarEstado'])->name('admin.pedidos.update');
+Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::resource('usuarios', AdminUsuarioController::class);
+    Route::resource('productos', ProductoController::class)->except(['show']);
+    Route::resource('ventas', VentaController::class)->only(['index', 'show']);
+    Route::get('/reporte', [AdminController::class, 'reporte'])->name('admin.reporte');
 });

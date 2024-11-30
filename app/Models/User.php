@@ -2,55 +2,35 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use Notifiable;
 
     protected $table = 'usuarios';
-    protected $primaryKey = 'rut_usuario'; 
-    public $incrementing = false; 
+    protected $primaryKey = 'rut_usuario';
+    public $incrementing = false; // Si `rut_usuario` no es autoincremental
     protected $keyType = 'string';
 
     protected $fillable = [
-        'rut_usuario', 
-        'nombre_usuario', 
-        'correo', 
-        'password', 
+        'rut_usuario',
+        'nombre_usuario',
+        'correo',
+        'password',
+        'telefono',
+        'direccion',
         'rol',
     ];
 
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
-
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
+    public function carrito()
+    {
+        return $this->hasMany(Carrito::class, 'rut_usuario', 'rut_usuario');
+    }
 
     public function ventas()
     {
-        return $this->hasMany(Venta::class, 'id_usuario', 'id');
+        return $this->hasMany(Venta::class, 'rut_usuario', 'rut_usuario');
     }
-
-
-    public function carrito()
-    {
-        return $this->belongsToMany(Producto::class, 'detalle_carrito', 'rut_usuario', 'cod_producto')
-                    ->withPivot('cantidad');
-    }
-
-    public function getAuthIdentifierName()
-    {
-        return 'correo';
-    }
-    public function username()
-    {
-        return 'correo'; // Campo en la base de datos que usaremos para autenticarnos
-    }
-
 }

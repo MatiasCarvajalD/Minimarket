@@ -9,10 +9,18 @@ class Ajuste extends Model
 {
     use HasFactory;
 
-    protected $table = 'ajustes';
+    protected $table = 'ajuste';
+    protected $primaryKey = 'id_ajuste';
 
     protected $fillable = [
-        'clave',
-        'valor',
+        'cod_producto',
+        'cantidad',
+        'tipo_ajuste',
+        'descripcion',
     ];
+
+    public function producto()
+    {
+        return $this->belongsTo(Producto::class, 'cod_producto', 'cod_producto');
+    }
 }

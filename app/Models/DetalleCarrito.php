@@ -12,19 +12,18 @@ class DetalleCarrito extends Model
     protected $table = 'detalle_carrito';
 
     protected $fillable = [
-        'carrito_id',
-        'producto_id',
+        'rut_usuario',
+        'cod_producto',
         'cantidad',
-        'precio',
     ];
 
-    public function carrito()
+    public function usuario()
     {
-        return $this->belongsTo(Carrito::class, 'carrito_id', 'id');
+        return $this->belongsTo(User::class, 'rut_usuario', 'rut_usuario');
     }
 
     public function producto()
     {
-        return $this->belongsTo(Producto::class, 'producto_id', 'cod_producto');
+        return $this->belongsTo(Producto::class, 'cod_producto', 'cod_producto');
     }
 }

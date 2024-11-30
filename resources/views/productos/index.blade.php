@@ -3,32 +3,19 @@
 @section('title', 'Productos')
 
 @section('content')
-    <h2 class="text-center">Lista de Productos</h2>
-    <table class="table table-striped mt-4">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Stock</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($productos as $producto)
-                <tr>
-                    <td>{{ $producto->nom_producto }}</td>
-                    <td>{{ $producto->precio }}</td>
-                    <td>{{ $producto->stock_actual }}</td>
-                    <td>
-                        <a href="{{ route('productos.edit', $producto->id) }}" class="btn btn-warning btn-sm">Editar</a>
-                        <form method="POST" action="{{ route('productos.destroy', $producto->id) }}" style="display: inline-block;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+<h1 class="mb-4">Lista de Productos</h1>
+<div class="row">
+    @foreach($productos as $producto)
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ $producto->nom_producto }}</h5>
+                    <p class="card-text">{{ $producto->descripcion }}</p>
+                    <p class="card-text"><strong>${{ number_format($producto->precio, 0, ',', '.') }}</strong></p>
+                    <a href="{{ route('productos.show', $producto->cod_producto) }}" class="btn btn-primary">Ver Detalle</a>
+                </div>
+            </div>
+        </div>
+    @endforeach
+</div>
 @endsection

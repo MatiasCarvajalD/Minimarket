@@ -10,23 +10,21 @@ class Venta extends Model
     use HasFactory;
 
     protected $table = 'ventas';
+    protected $primaryKey = 'id_venta';
 
     protected $fillable = [
+        'rut_usuario',
         'fecha',
         'total',
-        'id_usuario',
-        // otros atributos
     ];
-    
-
-    public function detalles()
-    {
-        return $this->hasMany(DetalleVenta::class, 'venta_id', 'id');
-    }
 
     public function usuario()
     {
-        return $this->belongsTo(Usuario::class, 'id_usuario', 'id');
+        return $this->belongsTo(User::class, 'rut_usuario', 'rut_usuario');
     }
 
+    public function detalles()
+    {
+        return $this->hasMany(DetalleVenta::class, 'id_venta', 'id_venta');
+    }
 }
