@@ -10,13 +10,14 @@ class CreateProveedorTable extends Migration
     {
         Schema::create('proveedor', function (Blueprint $table) {
             $table->id('id_proveedor'); // Clave primaria
-            $table->bigInteger('rut_proveedor')->unique(); // Nuevo campo agregado
-            $table->string('nom_proveedor', 50); // Nombre del proveedor
-            $table->string('telefono_proveedor', 20)->nullable(); // Teléfono opcional
-            $table->string('direccion_proveedor', 100)->nullable(); // Dirección opcional
-            $table->string('correo_proveedor', 50)->nullable(); // Correo opcional
+            $table->unsignedBigInteger('rut_proveedor')->unique(); // Rut único
+            $table->string('nom_proveedor', 50);
+            $table->string('telefono_proveedor', 20)->nullable();
+            $table->string('direccion_proveedor', 100)->nullable();
+            $table->string('correo_proveedor', 50)->nullable();
             $table->timestamps();
         });
+        
     }
 
     public function down()

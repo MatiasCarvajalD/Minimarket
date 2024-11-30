@@ -15,10 +15,13 @@ class DetalleVentaSeeder extends Seeder
                 'cod_producto' => 1,
                 'cantidad' => 2,
                 'valor_unidad' => 1200,
-                'created_at' => now(),
-                'updated_at' => now(),
+            ],
+            [
+                'id_venta' => 1,
+                'cod_producto' => 2,
+                'cantidad' => 1,
+                'valor_unidad' => 1500,
             ],
         ]);
     }
 }
-

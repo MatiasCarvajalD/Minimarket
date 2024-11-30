@@ -11,18 +11,19 @@ class CarritoSeeder extends Seeder
     {
         DB::table('carrito')->insert([
             [
-                'id_carrito',
-                'rut_usuario' => 12345678, // Relación válida con la tabla usuarios
-                'cod_producto' => 1,       // Relación válida con la tabla productos
+                'id_carrito' => 1, // Este campo depende de tu migración; verifica si existe
+                'rut_usuario' => 12345678,
+                'cod_producto' => 1,
                 'cantidad' => 3,
-                'created_at' => now(),
+                'created_at' => now(), // Solo si la tabla incluye timestamps
                 'updated_at' => now(),
             ],
             [
-                'rut_usuario' => 87654321, // Otro usuario
-                'cod_producto' => 2,       // Otro producto
-                'cantidad' => 1,
-                'created_at' => now(),
+                'id_carrito' => 2, // Este campo depende de tu migración; verifica si existe
+                'rut_usuario' => 87654321,
+                'cod_producto' => 2,
+                'cantidad' => 2,
+                'created_at' => now(), // Solo si la tabla incluye timestamps
                 'updated_at' => now(),
             ],
         ]);

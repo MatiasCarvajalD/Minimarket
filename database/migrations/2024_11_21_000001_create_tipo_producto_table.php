@@ -9,8 +9,8 @@ class CreateTipoProductoTable extends Migration
     public function up()
     {
         Schema::create('tipo_producto', function (Blueprint $table) {
-            $table->unsignedTinyInteger('id_categoria')->autoIncrement();
-            $table->string('categoria', 15);
+            $table->id('id_categoria'); // Clave primaria
+            $table->string('categoria', 15); // Nombre de la categoría
             $table->timestamps();
         });
     }
@@ -19,4 +19,4 @@ class CreateTipoProductoTable extends Migration
     {
         Schema::dropIfExists('tipo_producto');
     }
-};
+}

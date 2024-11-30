@@ -9,14 +9,13 @@ class CreateDetalleVentaTable extends Migration
     public function up()
     {
         Schema::create('detalle_venta', function (Blueprint $table) {
-            $table->unsignedBigInteger('id_venta');
-            $table->unsignedBigInteger('cod_producto');
+            $table->unsignedBigInteger('id_venta'); // FK
+            $table->unsignedBigInteger('cod_producto'); // FK
             $table->unsignedTinyInteger('cantidad');
             $table->integer('valor_unidad');
-            $table->timestamps();
-
-            $table->foreign('id_venta')->references('id_venta')->on('ventas')->onDelete('cascade');
-            $table->foreign('cod_producto')->references('cod_producto')->on('productos')->onDelete('cascade');
+            $table->primary(['id_venta', 'cod_producto']); // Clave primaria compuesta
+            $table->foreign('id_venta')->references('id_venta')->on('ventas')->cascadeOnDelete();
+            $table->foreign('cod_producto')->references('cod_producto')->on('productos')->cascadeOnDelete();
         });
     }
 
@@ -24,4 +23,4 @@ class CreateDetalleVentaTable extends Migration
     {
         Schema::dropIfExists('detalle_venta');
     }
-};
+}

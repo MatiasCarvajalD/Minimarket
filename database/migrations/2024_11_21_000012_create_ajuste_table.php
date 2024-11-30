@@ -9,17 +9,20 @@ class CreateAjusteTable extends Migration
     public function up()
     {
         Schema::create('ajuste', function (Blueprint $table) {
-            $table->id('id_ajuste');
-            $table->unsignedBigInteger('cod_producto');
+            $table->id('id_ajuste'); // Clave primaria
+            $table->unsignedBigInteger('cod_producto'); // Clave foránea
             $table->unsignedTinyInteger('cantidad');
+            $table->date('fecha');
+            $table->string('tipo_ajuste', 15);
+            $table->string('descripcion', 255)->nullable();
             $table->timestamps();
-
-            $table->foreign('cod_producto')->references('cod_producto')->on('productos')->onDelete('cascade');
+            $table->foreign('cod_producto')->references('cod_producto')->on('productos')->cascadeOnDelete();
         });
+        
     }
 
     public function down()
     {
         Schema::dropIfExists('ajuste');
     }
-};
+}

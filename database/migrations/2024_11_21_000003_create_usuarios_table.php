@@ -10,13 +10,13 @@ class CreateUsuariosTable extends Migration
     public function up()
     {
         Schema::create('usuarios', function (Blueprint $table) {
-            $table->unsignedBigInteger('rut_usuario')->primary();
+            $table->id('rut_usuario'); // Clave primaria
+            $table->string('password', 255); // Columna de contraseña
             $table->string('nombre_usuario', 30);
-            $table->string('password', 60);
+            $table->bigInteger('telefono')->nullable();;
+            $table->string('direccion', 30)->nullable();;
             $table->string('correo', 30)->unique();
-            $table->string('telefono', 12)->nullable();
-            $table->string('direccion', 30)->nullable();
-            $table->string('rol')->default('user');
+            $table->enum('rol', ['admin', 'usuario', 'invitado']);
             $table->timestamps();
         });
         

@@ -9,12 +9,11 @@ class CreateCompraTable extends Migration
     public function up()
     {
         Schema::create('compra', function (Blueprint $table) {
-            $table->id('cod_compra');
-            $table->bigInteger('rut_proveedor');
+            $table->id('cod_compra'); // Clave primaria
+            $table->unsignedBigInteger('rut_proveedor'); // FK
             $table->date('fecha');
-            $table->timestamps();
-
-            $table->foreign('rut_proveedor')->references('rut_proveedor')->on('proveedor')->onDelete('cascade');
+            $table->timestamps(); // Incluye created_at y updated_at
+            $table->foreign('rut_proveedor')->references('rut_proveedor')->on('proveedor')->cascadeOnDelete();
         });
     }
 
@@ -22,4 +21,4 @@ class CreateCompraTable extends Migration
     {
         Schema::dropIfExists('compra');
     }
-};
+}
