@@ -9,35 +9,35 @@ use Illuminate\Support\Facades\Auth;
 
 class CarritoController extends Controller
 {
+    // Mostrar carrito
     public function index()
     {
         $rutUsuario = Auth::user()->rut_usuario;
-
         $carrito = Carrito::with('producto')->where('rut_usuario', $rutUsuario)->get();
 
-        return view('carrito.index', compact('carrito'));
+        return view('Usuario.carrito', compact('carrito'));
     }
 
-    public function add(Request $request)
+    // Agregar producto al carrito
+    public function add($id)
     {
-        $request->validate([
-            'cod_producto' => 'required|exists:productos,cod_producto',
-            'cantidad' => 'required|integer|min:1',
-        ]);
+        $rutUsuario = Auth::user()->rut_usuario;
 
         Carrito::create([
-            'rut_usuario' => Auth::user()->rut_usuario,
-            'cod_producto' => $request->cod_producto,
-            'cantidad' => $request->cantidad,
+            'rut_usuario' => $rutUsuario,
+            'cod_producto' => $id,
+            'cantidad' => 1,
         ]);
 
         return redirect()->route('carrito.index')->with('success', 'Producto agregado al carrito.');
     }
 
+    // Eliminar producto del carrito
     public function remove($id_carrito)
     {
-        $detalle = Carrito::findOrFail($id_carrito); // Busca el registro por ID
-        $detalle->delete(); // Elimina el registro
+        $detalle = Carrito::findOrFail($id_carrito);
+        $detalle->delete();
+
         return redirect()->route('carrito.index')->with('success', 'Producto eliminado del carrito.');
     }
 }

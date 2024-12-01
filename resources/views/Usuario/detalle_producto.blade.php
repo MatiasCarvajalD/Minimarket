@@ -3,21 +3,18 @@
 @section('title', $producto->nom_producto)
 
 @section('content')
-    <div class="product-detail">
-        <div class="product-image">
-            <img src="{{ asset('images/productos/' . $producto->imagen) }}" alt="{{ $producto->nom_producto }}">
-        </div>
-        <div class="product-info">
-            <h1>{{ $producto->nom_producto }}</h1>
-            <p><strong>Marca:</strong> {{ $producto->marca }}</p>
-            <p>{{ $producto->descripcion }}</p>
-            <p><strong>Precio:</strong> ${{ $producto->precio }}</p>
-            <form action="{{ route('carrito.add', $producto->cod_producto) }}" method="POST">
-                @csrf
-                <label for="cantidad">Cantidad:</label>
-                <input type="number" name="cantidad" value="1" min="1">
-                <button type="submit" class="btn">Agregar al Carrito</button>
-            </form>
-        </div>
+<div class="card">
+    <div class="card-header">
+        <h3>{{ $producto->nom_producto }}</h3>
     </div>
+    <div class="card-body">
+        <p><strong>Descripción:</strong> {{ $producto->descripcion }}</p>
+        <p><strong>Precio:</strong> ${{ number_format($producto->precio, 0, ',', '.') }}</p>
+        <form action="{{ route('carrito.add', $producto->cod_producto) }}" method="POST">
+            @csrf
+            <button type="submit" class="btn btn-success">Agregar al Carrito</button>
+        </form>
+        <a href="{{ route('minimarket.index') }}" class="btn btn-secondary mt-3">Volver</a>
+    </div>
+</div>
 @endsection

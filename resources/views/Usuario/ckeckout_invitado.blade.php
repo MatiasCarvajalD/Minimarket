@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Checkout')
+@section('title', 'Checkout Invitado')
 
 @section('content')
-<h1 class="mb-4">Finalizar Compra</h1>
+<h1 class="mb-4">Finalizar Compra como Invitado</h1>
 
 @if($carrito->isEmpty())
     <div class="alert alert-warning">
@@ -37,16 +37,16 @@
     <form action="{{ route('checkout.store') }}" method="POST" class="mt-4">
         @csrf
         <div class="form-group">
-            <label for="direccion">Dirección de Entrega</label>
-            <input type="text" name="direccion" id="direccion" class="form-control" required>
+            <label for="nombre">Nombre Completo</label>
+            <input type="text" name="nombre" id="nombre" class="form-control" required>
         </div>
         <div class="form-group">
-            <label for="metodo_pago">Método de Pago</label>
-            <select name="metodo_pago" id="metodo_pago" class="form-control" required>
-                <option value="tarjeta">Tarjeta de Crédito/Débito</option>
-                <option value="transferencia">Transferencia Bancaria</option>
-                <option value="efectivo">Pago en Efectivo</option>
-            </select>
+            <label for="correo">Correo Electrónico</label>
+            <input type="email" name="correo" id="correo" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="direccion">Dirección de Entrega</label>
+            <input type="text" name="direccion" id="direccion" class="form-control" required>
         </div>
         <button type="submit" class="btn btn-success btn-lg w-100 mt-3">Confirmar Compra</button>
     </form>

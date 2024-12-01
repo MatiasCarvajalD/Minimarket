@@ -8,6 +8,6 @@ class HomeController extends Controller
 {
     public function index()
     {
-        return view('auth.home'); // Verifica que la vista exista.
+        return view('Usuario.home'); // Verifica que la vista exista.
     }
 }

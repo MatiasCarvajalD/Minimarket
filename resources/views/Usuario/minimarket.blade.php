@@ -3,21 +3,25 @@
 @section('title', 'Minimarket')
 
 @section('content')
-    <h1>Minimarket</h1>
-    <div class="categories">
-        @foreach($categorias as $categoria)
-            <h2>{{ $categoria->categoria }}</h2>
-            <div class="products">
-                @foreach($categoria->productos as $producto)
-                    <div class="product-card">
-                        <img src="{{ asset('images/productos/' . $producto->imagen) }}" alt="{{ $producto->nom_producto }}">
-                        <h3>{{ $producto->nom_producto }}</h3>
-                        <p>{{ $producto->descripcion }}</p>
-                        <p><strong>${{ $producto->precio }}</strong></p>
-                        <a href="{{ route('carrito.add', $producto->cod_producto) }}" class="btn">Agregar al Carrito</a>
-                    </div>
-                @endforeach
+<h1 class="mb-4">Productos del Minimarket</h1>
+<div class="row">
+    @foreach($productos as $producto)
+        @if($producto->tipo_producto == 'minimarket')
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ $producto->nom_producto }}</h5>
+                    <p class="card-text">{{ $producto->descripcion }}</p>
+                    <p class="card-text"><strong>${{ number_format($producto->precio, 0, ',', '.') }}</strong></p>
+                    <a href="{{ route('productos.show', $producto->cod_producto) }}" class="btn btn-primary">Ver Detalle</a>
+                    <form action="{{ route('carrito.add', $producto->cod_producto) }}" method="POST" class="mt-2">
+                        @csrf
+                        <button type="submit" class="btn btn-success">Agregar al Carrito</button>
+                    </form>
+                </div>
             </div>
-        @endforeach
-    </div>
+        </div>
+        @endif
+    @endforeach
+</div>
 @endsection

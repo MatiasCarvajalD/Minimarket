@@ -61,4 +61,27 @@ class ProductoController extends Controller
         $producto->delete();
         return redirect()->route('productos.index')->with('success', 'Producto eliminado correctamente.');
     }
+
+    // Mostrar productos del Minimarket
+    public function minimarket()
+    {
+        $productos = Producto::where('tipo_producto', 'minimarket')->get();
+        return view('Usuario.minimarket', compact('productos'));
+    }
+
+    // Mostrar productos del Restaurant
+    public function restaurant()
+    {
+        $productos = Producto::where('tipo_producto', 'restaurant')->get();
+        return view('Usuario.restaurant', compact('productos'));
+    }
+
+    // Mostrar detalles de un producto
+    public function show($id)
+    {
+        $producto = Producto::findOrFail($id);
+        return view('Usuario.detalle_producto', compact('producto'));
+    }
+
+
 }
