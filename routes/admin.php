@@ -3,6 +3,8 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminUsuarioController;
 use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\AuthController;
+
 
 // Grupo de rutas protegidas por 'auth' y un middleware de rol (opcional)
 Route::middleware(['auth', 'role:admin'])->group(function () {

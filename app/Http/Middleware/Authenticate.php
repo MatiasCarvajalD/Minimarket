@@ -12,11 +12,15 @@ class Authenticate extends Middleware
      * @param  \Illuminate\Http\Request  $request
      * @return string|null
      */
-    protected function redirectTo($request)
+    public function handle($request, Closure $next, ...$guards)
     {
-        
-        if (!$request->expectsJson()) {
-            return route('login'); 
+        if (! auth()->check()) {
+            \Log::info('Usuario no autenticado. Redirigiendo al login.');
+            return redirect()->route('login');
         }
+
+        \Log::info('Usuario autenticado.');
+        return $next($request);
     }
+
 }

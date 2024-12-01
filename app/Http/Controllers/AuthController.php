@@ -15,19 +15,24 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
-            'correo' => 'required|email',
-            'password' => 'required',
+        // Validar los datos
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
         ]);
 
-        if (Auth::attempt($request->only('correo', 'password'))) {
-            return redirect()->route('home'); // Redirige al home si las credenciales son correctas
+        // Intentar autenticar al usuario
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+
+            // Redirigir al usuario autenticado
+            return redirect()->intended('/dashboard'); // Cambia '/dashboard' por la ruta deseada
         }
 
-        // Si las credenciales no coinciden
+        // Si falla la autenticación, redirigir con un mensaje de error
         return back()->withErrors([
-            'login' => 'Las credenciales no coinciden. Por favor, inténtalo de nuevo.',
-        ])->withInput(); // Retorna los datos ingresados para que se mantengan en el formulario
+            'email' => 'Las credenciales no coinciden con nuestros registros.',
+        ]);
     }
 
     // Procesar registro
@@ -49,10 +54,14 @@ class AuthController extends Controller
     }
 
     // Logout
-    public function logout()
+    public function logout(Request $request)
     {
         Auth::logout();
-        return redirect()->route('login')->with('success', 'Has cerrado sesión.');
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/login');
     }
 
     public function loginAsGuest()
