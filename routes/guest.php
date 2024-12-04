@@ -1,17 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\AuthController;
 
-// Página de inicio
-Route::get('/', [HomeController::class, 'index'])->name('home');
+// Ver catálogo público
+Route::get('/catalogo', function () {
+    return view('catalogo');
+})->name('guest.catalogo');
 
-// Autenticación
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
-Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+// Ver detalles de un producto
+Route::get('/producto/{id}', function ($id) {
+    return view('producto', ['id' => $id]);
+})->name('guest.producto');
 
-Route::get('/productos', [HomeController::class, 'productos'])->name('productos.index');

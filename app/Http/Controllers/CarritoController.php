@@ -19,7 +19,7 @@ class CarritoController extends Controller
     }
 
     // Agregar producto al carrito
-    public function add($id)
+    public function add($id_carrito)
     {
         $rutUsuario = Auth::user()->rut_usuario;
 
@@ -40,4 +40,14 @@ class CarritoController extends Controller
 
         return redirect()->route('carrito.index')->with('success', 'Producto eliminado del carrito.');
     }
+    public function checkout()
+    {
+        // Aquí puedes obtener los productos del carrito y mostrarlos en la vista de checkout
+        $usuario = auth()->user();
+        $carrito = Carrito::where('rut_usuario', $usuario->rut_usuario)->get();
+        $productos = Producto::whereIn('cod_producto', $carrito->pluck('cod_producto'))->get();
+
+        return view('carrito.checkout', compact('carrito', 'productos'));
+    }
+
 }

@@ -2,24 +2,30 @@
 
 @section('content')
 <div class="container">
-    <h2>Checkout</h2>
-    <form action="{{ route('checkout.procesar') }}" method="POST">
-        @csrf
-        <div class="mb-3">
-            <label for="direccion" class="form-label">Dirección de Entrega</label>
-            <input type="text" class="form-control" id="direccion" name="direccion" required>
-        </div>
-    
-        <div class="mb-3">
-            <label for="metodo_pago" class="form-label">Método de Pago</label>
-            <select class="form-control" id="metodo_pago" name="metodo_pago" required>
-                <option value="tarjeta">Tarjeta</option>
-                <option value="efectivo">Efectivo</option>
-            </select>
-        </div>
-    
-        <button type="submit" class="btn btn-primary">Confirmar Compra</button>
-    </form>
-    
+    <h1>Checkout</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($carrito as $item)
+                @php
+                    $producto = $productos->firstWhere('cod_producto', $item->cod_producto);
+                @endphp
+                <tr>
+                    <td>{{ $producto->nombre }}</td>
+                    <td>{{ $item->cantidad }}</td>
+                    <td>${{ $producto->precio }}</td>
+                    <td>${{ $producto->precio * $item->cantidad }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+    <a href="#" class="btn btn-success">Finalizar Compra</a>
 </div>
 @endsection

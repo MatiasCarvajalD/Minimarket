@@ -15,7 +15,7 @@ class CreateUsuariosTable extends Migration
             $table->string('nombre_usuario', 30);
             $table->bigInteger('telefono')->nullable();;
             $table->string('direccion', 30)->nullable();;
-            $table->string('correo', 30)->unique();
+            $table->string('email', 30)->unique();
             $table->enum('rol', ['admin', 'usuario', 'invitado']);
             $table->timestamps();
         });
