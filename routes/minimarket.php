@@ -1,9 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductoController;
 
-Route::middleware(['auth'])->group(function () {
-    // Página principal del minimarket
-    Route::get('/minimarket', [ProductoController::class, 'minimarket'])->name('minimarket.index');
+// Rutas para el minimarket
+Route::middleware(['auth'])->prefix('minimarket')->name('minimarket.')->group(function () {
+    Route::get('/', [ProductoController::class, 'minimarket'])->name('index');
 });

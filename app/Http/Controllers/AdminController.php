@@ -4,42 +4,56 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Producto;
+use App\Models\Venta;
 
 class AdminController extends Controller
 {
-    // Mostrar el panel de administración
-    public function index()
+    public function __construct()
     {
-        return view('admin.index'); // Asegúrate de tener esta vista
+        $this->middleware(function ($request, $next) {
+            if (auth()->user()->rol !== 'admin') {
+                abort(403, 'Acceso denegado.');
+            }
+            return $next($request);
+        });
     }
 
-    // Mostrar la lista de usuarios
-    public function users()
+    public function usuarios()
     {
-        $users = User::all(); // Obtenemos todos los usuarios
-        return view('admin.users', compact('users')); // Asegúrate de tener esta vista
+        $usuarios = User::where('rol', '!=', 'admin')->get();
+        return view('admin.usuarios.index', compact('usuarios'));
     }
 
-    // Mostrar un usuario específico
-    public function show($id)
+    public function editarUsuario($id)
     {
-        $user = User::findOrFail($id);
-        return view('admin.show', compact('user')); // Asegúrate de tener esta vista
+        $usuario = User::findOrFail($id);
+        return view('admin.usuarios.edit', compact('usuario'));
     }
 
-    // Eliminar un usuario
-    public function destroy($id)
+    public function actualizarUsuario(Request $request, $id)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
+        $usuario = User::findOrFail($id);
 
-        return redirect()->route('admin.users')->with('success', 'Usuario eliminado correctamente.');
+        $validated = $request->validate([
+            'nombre_usuario' => 'required|string|max:255',
+            'email' => 'required|email|unique:usuarios,email,' . $usuario->id,
+        ]);
+
+        $usuario->update($validated);
+
+        return redirect()->route('admin.usuarios')->with('success', 'Usuario actualizado.');
     }
 
-    public function listarPedidos()
+    public function productos()
     {
-        $pedidos = Venta::with('user')->orderBy('created_at', 'desc')->get();
-        return view('admin.pedidos.index', compact('pedidos'));
+        $productos = Producto::all();
+        return view('admin.productos.index', compact('productos'));
     }
 
+    public function pedidos()
+    {
+        $ventas = Venta::with('detalles')->get();
+        return view('admin.pedidos.index', compact('ventas'));
+    }
 }

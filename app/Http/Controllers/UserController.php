@@ -2,88 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use App\Models\Venta;
 
 class UserController extends Controller
 {
-    /**
-     * Mostrar una lista de usuarios.
-     */
-    public function index()
+    public function __construct()
     {
-        $usuarios = User::all();
-        return view('usuarios.index', compact('usuarios'));
+        $this->middleware(function ($request, $next) {
+            if (auth()->user()->rol !== 'usuario') {
+                abort(403, 'Acceso denegado.');
+            }
+            return $next($request);
+        });
     }
 
-    /**
-     * Mostrar el formulario para crear un nuevo usuario.
-     */
-    public function create()
+    public function home()
     {
-        return view('usuarios.create');
+        return view('Usuario.home');
     }
 
-    /**
-     * Guardar un nuevo usuario en la base de datos.
-     */
-    public function store(Request $request)
+    public function profile()
     {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'rol' => 'required|in:admin,usuario,invitado',
+        $user = auth()->user();
+        return view('Usuario.configuracion', compact('user'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+
+        $validated = $request->validate([
+            'nombre_usuario' => 'required|string|max:255',
+            'email' => 'required|email|unique:usuarios,email,' . $user->id,
+            'telefono' => 'nullable|string|max:15',
+            'direccion' => 'nullable|string|max:255',
         ]);
 
-        User::create([
-            'nombre' => $request->nombre,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'rol' => $request->rol,
-        ]);
+        $user->update($validated);
 
-        return redirect()->route('usuarios.index')->with('success', 'Usuario creado correctamente.');
+        return redirect()->route('user.profile')->with('success', 'Perfil actualizado.');
     }
 
-    /**
-     * Mostrar el formulario para editar un usuario existente.
-     */
-    public function edit($id)
+    public function historialCompras()
     {
-        $usuario = User::findOrFail($id);
-        return view('usuarios.edit', compact('usuario'));
+        $ventas = Venta::where('rut_usuario', auth()->user()->rut_usuario)->get();
+        return view('Usuario.historial_compras', compact('ventas'));
     }
 
-    /**
-     * Actualizar un usuario existente en la base de datos.
-     */
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'rol' => 'required|in:admin,usuario,invitado',
-        ]);
+    public function detalleCompra($id)
+{
+    // Obtener la venta y sus detalles
+    $venta = \App\Models\Venta::where('id_venta', $id)
+        ->where('rut_usuario', auth()->user()->rut_usuario)
+        ->with('detalles.producto') // Cargar productos relacionados
+        ->firstOrFail();
 
-        $usuario = User::findOrFail($id);
-        $usuario->update([
-            'nombre' => $request->nombre,
-            'email' => $request->email,
-            'rol' => $request->rol,
-        ]);
-
-        return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado correctamente.');
-    }
-
-    /**
-     * Eliminar un usuario de la base de datos.
-     */
-    public function destroy($id)
-    {
-        $usuario = User::findOrFail($id);
-        $usuario->delete();
-        return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado correctamente.');
-    }
+    return view('Usuario.detalle_compra', compact('venta'));
+}
 }

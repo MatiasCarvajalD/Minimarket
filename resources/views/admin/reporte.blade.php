@@ -1,18 +1,29 @@
 @extends('layouts.app')
 
-@section('title', 'Generar Reportes')
+@section('title', 'Reporte')
 
 @section('content')
-<h1>Generar Reporte</h1>
-<form action="{{ route('admin.reporte') }}" method="GET">
-    <div class="form-group">
-        <label for="fecha_inicio">Fecha Inicio</label>
-        <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control" required>
-    </div>
-    <div class="form-group">
-        <label for="fecha_fin">Fecha Fin</label>
-        <input type="date" name="fecha_fin" id="fecha_fin" class="form-control" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Generar</button>
-</form>
+<div class="container">
+    <h1>Reporte de Ventas</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Producto</th>
+                <th>Cantidad Vendida</th>
+                <th>Ingresos</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($reporte as $item)
+            <tr>
+                <td>{{ $loop->iteration }}</td>
+                <td>{{ $item->producto->nombre }}</td>
+                <td>{{ $item->cantidad }}</td>
+                <td>${{ number_format($item->ingresos, 0, ',', '.') }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
 @endsection

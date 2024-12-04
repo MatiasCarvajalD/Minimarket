@@ -1,20 +1,18 @@
 @extends('layouts.app')
 
-@section('title', $producto->nom_producto)
+@section('title', 'Detalle del Producto')
 
 @section('content')
-<div class="card">
-    <div class="card-header">
-        <h3>{{ $producto->nom_producto }}</h3>
-    </div>
-    <div class="card-body">
-        <p><strong>Descripción:</strong> {{ $producto->descripcion }}</p>
-        <p><strong>Precio:</strong> ${{ number_format($producto->precio, 0, ',', '.') }}</p>
-        <form action="{{ route('carrito.add', $producto->cod_producto) }}" method="POST">
-            @csrf
-            <button type="submit" class="btn btn-success">Agregar al Carrito</button>
-        </form>
-        <a href="{{ route('minimarket.index') }}" class="btn btn-secondary mt-3">Volver</a>
+<div class="container">
+    <h1>Detalle del Producto</h1>
+    <div class="card">
+        <img src="{{ $producto->imagen_url }}" class="card-img-top" alt="{{ $producto->nombre }}">
+        <div class="card-body">
+            <h5 class="card-title">{{ $producto->nombre }}</h5>
+            <p class="card-text">Descripción: {{ $producto->descripcion }}</p>
+            <p class="card-text">Precio: ${{ number_format($producto->precio, 0, ',', '.') }}</p>
+            <a href="{{ route('carrito.add', $producto->id) }}" class="btn btn-primary">Agregar al Carrito</a>
+        </div>
     </div>
 </div>
 @endsection

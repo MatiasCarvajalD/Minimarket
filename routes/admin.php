@@ -2,16 +2,11 @@
 
 use App\Http\Controllers\AdminController;
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    // Productos
-    Route::resource('productos', AdminController::class)->except(['show']);
-
-    // Usuarios
-    Route::resource('usuarios', AdminController::class)->only(['index', 'edit', 'update']);
-
-    // Ventas
-    Route::get('ventas', [AdminController::class, 'ventasIndex'])->name('ventas.index');
-    Route::get('ventas/{id}', [AdminController::class, 'ventasShow'])->name('ventas.show');
-    Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-    Route::get('reporte', [AdminController::class, 'reporte'])->name('reporte');
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('usuarios', [AdminController::class, 'usuariosIndex'])->name('usuarios.index');
+    Route::get('usuarios/create', [AdminController::class, 'usuariosCreate'])->name('usuarios.create');
+    Route::post('usuarios', [AdminController::class, 'usuariosStore'])->name('usuarios.store');
+    Route::get('usuarios/{id}/edit', [AdminController::class, 'usuariosEdit'])->name('usuarios.edit');
+    Route::put('usuarios/{id}', [AdminController::class, 'usuariosUpdate'])->name('usuarios.update');
+    Route::delete('usuarios/{id}', [AdminController::class, 'usuariosDestroy'])->name('usuarios.destroy');
 });

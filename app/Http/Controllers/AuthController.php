@@ -4,81 +4,63 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User; 
 
 class AuthController extends Controller
 {
+    // Método para mostrar el formulario de login
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
+
+    // Método para manejar el login
     public function login(Request $request)
     {
-        // Validar los datos
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        $credentials = $request->only('email', 'password');
 
-        // Intentar autenticar al usuario
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-
-            // Redirigir al usuario autenticado
-            return redirect()->intended('/dashboard'); // Cambia '/dashboard' por la ruta deseada
+            // Redirige al usuario a la página de inicio
+            return redirect()->route('user.home');
         }
 
-        // Si falla la autenticación, redirigir con un mensaje de error
-        return back()->withErrors([
-            'email' => 'Las credenciales no coinciden con nuestros registros.',
-        ]);
+        // Si las credenciales no son correctas, vuelve al login con un error
+        return redirect()->route('login')->withErrors(['email' => 'Credenciales incorrectas']);
     }
 
-    // Procesar registro
+    // Método para hacer logout
+    public function logout()
+    {
+        Auth::logout(); // Cierra la sesión
+        return redirect()->route('login'); // Redirige a la página de login
+    }
+    // Muestra el formulario de registro
+    public function showRegisterForm()
+    {
+        return view('auth.register');
+    }
+
+    // Procesa el registro de un nuevo usuario
     public function register(Request $request)
     {
         $validated = $request->validate([
             'nombre_usuario' => 'required|string|max:255',
-            'correo' => 'required|string|email|max:255|unique:usuarios,correo',
+            'email' => 'required|email|unique:usuarios,email',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
         User::create([
-            'nombre_usuario' => $validated['nombre_usuario'], 
-            'correo' => $validated['correo'], 
+            'nombre_usuario' => $validated['nombre_usuario'],
+            'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
+            'rol' => 'usuario',
         ]);
 
-        return redirect()->route('login')->with('success', '¡Cuenta creada con éxito!');
+        return redirect()->route('login')->with('success', 'Registro exitoso.');
+    }
+    protected function redirectTo()
+    {
+        return route('user.home');  // Asegúrate de que esta ruta esté definida
     }
 
-    // Logout
-    public function logout(Request $request)
-    {
-        Auth::logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/login');
-    }
-
-    public function loginAsGuest()
-    {
-        // Buscar al usuario invitado predefinido
-        $invitado = User::where('rut_usuario', '99999999')->first();
-
-        // Autenticar al usuario invitado
-        Auth::login($invitado);
-
-        // Redirigir a la página de inicio o la ruta que elijas
-        return redirect()->route('home')->with('success', 'Has iniciado sesión como invitado.');
-}
-
-    // Mostrar formulario de registro
-    public function showRegistrationForm()
-    {
-        return view('auth.register');
-    }
 }

@@ -1,17 +1,20 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>{{ $producto->nom_producto }}</h1>
-    <p>Marca: {{ $producto->marca }}</p>
-    <p>Precio: {{ $producto->precio }} CLP</p>
-    <p>Stock: {{ $producto->stock_actual }}</p>
-    <p>{{ $producto->descripcion }}</p>
-    <form action="{{ route('carrito.add') }}" method="POST">
-        @csrf
-        <input type="hidden" name="producto_id" value="{{ $producto->cod_producto }}">
-        <input type="number" name="cantidad" min="1" max="{{ $producto->stock_actual }}" value="1">
-        <button type="submit" class="btn btn-primary">Agregar al Carrito</button>
-    </form>
-</div>
+    <div class="container">
+        <h1>Detalle del Producto</h1>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ $producto->nom_producto }}</h5>
+                <p class="card-text"><strong>Descripción:</strong> {{ $producto->descripcion }}</p>
+                <p><strong>Marca:</strong> {{ $producto->marca }}</p>
+                <p><strong>Precio:</strong> ${{ $producto->precio }}</p>
+                <p><strong>Stock Actual:</strong> {{ $producto->stock_actual }}</p>
+                <p><strong>Stock Crítico:</strong> {{ $producto->stock_critico }}</p>
+                <p><strong>Categoría:</strong> {{ $producto->tipoProducto->categoria }}</p>
+                <a href="{{ route('carrito.add', $producto->cod_producto) }}" class="btn btn-success">Agregar al Carrito</a>
+                <a href="{{ url()->previous() }}" class="btn btn-secondary">Volver</a>
+            </div>
+        </div>
+    </div>
 @endsection

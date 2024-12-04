@@ -2,86 +2,104 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Producto;
 use Illuminate\Http\Request;
+use App\Models\Producto;
+use App\Models\TipoProducto;
 
 class ProductoController extends Controller
 {
+    // Muestra todos los productos
     public function index()
     {
-        $productos = Producto::all();
+        $productos = Producto::with('tipoProducto')->get();
         return view('productos.index', compact('productos'));
     }
 
+    // Muestra un formulario para crear un nuevo producto
     public function create()
     {
         $categorias = TipoProducto::all();
-        return view('admin.productos.create', compact('categorias'));
+        return view('productos.create', compact('categorias'));
     }
 
+    // Guarda un nuevo producto en la base de datos
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nom_producto' => 'required|string|max:255',
-            'descripcion' => 'required|string',
+            'descripcion' => 'required|string|max:1000',
             'marca' => 'required|string|max:100',
             'precio' => 'required|numeric|min:0',
             'stock_actual' => 'required|integer|min:0',
             'stock_critico' => 'required|integer|min:0',
             'id_categoria' => 'required|exists:tipo_producto,id_categoria',
         ]);
-        Producto::create($request->all());
+
+        Producto::create($validated);
+
         return redirect()->route('productos.index')->with('success', 'Producto creado correctamente.');
     }
 
-
+    // Muestra un formulario para editar un producto existente
     public function edit($id)
     {
         $producto = Producto::findOrFail($id);
-        return view('productos.edit', compact('producto'));
+        $categorias = TipoProducto::all();
+        return view('productos.edit', compact('producto', 'categorias'));
     }
 
+    // Actualiza un producto existente
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $producto = Producto::findOrFail($id);
+
+        $validated = $request->validate([
             'nom_producto' => 'required|string|max:255',
+            'descripcion' => 'required|string|max:1000',
+            'marca' => 'required|string|max:100',
             'precio' => 'required|numeric|min:0',
             'stock_actual' => 'required|integer|min:0',
             'stock_critico' => 'required|integer|min:0',
+            'id_categoria' => 'required|exists:tipo_producto,id_categoria',
         ]);
 
-        $producto = Producto::findOrFail($id);
-        $producto->update($request->all());
+        $producto->update($validated);
+
         return redirect()->route('productos.index')->with('success', 'Producto actualizado correctamente.');
     }
 
+    // Elimina un producto
     public function destroy($id)
     {
         $producto = Producto::findOrFail($id);
         $producto->delete();
+
         return redirect()->route('productos.index')->with('success', 'Producto eliminado correctamente.');
     }
 
-    // Mostrar productos del Minimarket
+    // Filtra productos por Minimarket
     public function minimarket()
     {
-        $productos = Producto::where('tipo_producto', 'minimarket')->get();
-        return view('Usuario.minimarket', compact('productos'));
+        $productos = Producto::whereHas('tipoProducto', function ($query) {
+            $query->where('categoria', 'Minimarket');
+        })->get();
+
+        return view('Usuario.minimarket', compact('productos')); 
     }
 
-    // Mostrar productos del Restaurant
+    // Filtra productos por Restaurant
     public function restaurant()
     {
-        $productos = Producto::where('tipo_producto', 'restaurant')->get();
+        $productos = Producto::whereHas('tipoProducto', function ($query) {
+            $query->where('categoria', 'Restaurant');
+        })->get();
+
         return view('Usuario.restaurant', compact('productos'));
     }
 
-    // Mostrar detalles de un producto
     public function show($id)
     {
-        $producto = Producto::findOrFail($id);
-        return view('Usuario.detalle_producto', compact('producto'));
+        $producto = Producto::with('tipoProducto')->findOrFail($id);
+        return view('productos.detalle', compact('producto'));
     }
-
-
 }

@@ -1,14 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GuestController;
 
-// Ver catálogo público
-Route::get('/catalogo', function () {
-    return view('catalogo');
-})->name('guest.catalogo');
-
-// Ver detalles de un producto
-Route::get('/producto/{id}', function ($id) {
-    return view('producto', ['id' => $id]);
-})->name('guest.producto');
-
+// Rutas para invitados
+Route::prefix('guest')->name('guest.')->group(function () {
+    Route::get('catalogo', [GuestController::class, 'catalogo'])->name('catalogo');
+    Route::get('producto/{id}', [GuestController::class, 'detalleProducto'])->name('producto.detalle');
+    Route::get('checkout', [GuestController::class, 'checkout'])->name('checkout');
+});

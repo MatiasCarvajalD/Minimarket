@@ -1,51 +1,41 @@
 @extends('layouts.app')
 
-@section('title', 'Registrar Compra')
-
 @section('content')
-    <h1>Registrar Compra</h1>
-    <form action="{{ route('admin.compras.store') }}" method="POST">
-        @csrf
-        <div class="form-group">
-            <label for="proveedor">Proveedor</label>
-            <select name="proveedor" id="proveedor" class="form-control" required>
-                @foreach($proveedores as $proveedor)
-                    <option value="{{ $proveedor->id_proveedor }}">{{ $proveedor->nom_proveedor }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="fecha">Fecha</label>
-            <input type="date" name="fecha" id="fecha" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label for="productos">Productos</label>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Cantidad</th>
-                        <th>Precio</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($productos as $producto)
-                        <tr>
-                            <td>
-                                <input type="checkbox" name="productos[{{ $producto->cod_producto }}][seleccionado]">
-                                {{ $producto->nom_producto }}
-                            </td>
-                            <td>
-                                <input type="number" name="productos[{{ $producto->cod_producto }}][cantidad]" min="1" class="form-control">
-                            </td>
-                            <td>
-                                <input type="number" name="productos[{{ $producto->cod_producto }}][precio]" min="0" class="form-control">
-                            </td>
-                        </tr>
+    <div class="container">
+        <h1>Editar Producto</h1>
+        <form action="{{ route('admin.productos.update', $producto->cod_producto) }}" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="mb-3">
+                <label for="nom_producto" class="form-label">Nombre</label>
+                <input type="text" name="nom_producto" class="form-control" value="{{ $producto->nom_producto }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <textarea name="descripcion" class="form-control" rows="3" required>{{ $producto->descripcion }}</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="marca" class="form-label">Marca</label>
+                <input type="text" name="marca" class="form-control" value="{{ $producto->marca }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="precio" class="form-label">Precio</label>
+                <input type="number" name="precio" class="form-control" step="0.01" value="{{ $producto->precio }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="stock_actual" class="form-label">Stock Actual</label>
+                <input type="number" name="stock_actual" class="form-control" value="{{ $producto->stock_actual }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="id_categoria" class="form-label">Categoría</label>
+                <select name="id_categoria" class="form-select" required>
+                    @foreach($categorias as $categoria)
+                        <option value="{{ $categoria->id_categoria }}" @if($producto->id_categoria == $categoria->id_categoria) selected @endif>{{ $categoria->categoria }}</option>
                     @endforeach
-                </tbody>
-            </table>
-        </div>
-        <button type="submit" class="btn">Registrar Compra</button>
-    </form>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">Actualizar</button>
+            <a href="{{ route('admin.productos.index') }}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
 @endsection

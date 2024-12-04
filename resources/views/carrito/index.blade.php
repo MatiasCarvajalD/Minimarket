@@ -1,42 +1,44 @@
 @extends('layouts.app')
 
-@section('title', 'Carrito de Compras')
-
 @section('content')
-<h1 class="mb-4">Tu Carrito</h1>
-@if($carrito->isEmpty())
-    <div class="alert alert-warning">
-        No tienes productos en tu carrito.
+    <div class="container">
+        <h1>Carrito de Compras</h1>
+        @if($carrito->isEmpty())
+            <p>No hay productos en el carrito.</p>
+        @else
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php $total = 0; @endphp
+                    @foreach($carrito as $item)
+                        @php $subtotal = $item->cantidad * $item->producto->precio; @endphp
+                        @php $total += $subtotal; @endphp
+                        <tr>
+                            <td>{{ $item->producto->nom_producto }}</td>
+                            <td>{{ $item->cantidad }}</td>
+                            <td>${{ $item->producto->precio }}</td>
+                            <td>${{ $subtotal }}</td>
+                            <td>
+                                <form action="{{ route('carrito.remove', $item->id_carrito) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <h3>Total: ${{ $total }}</h3>
+            <a href="{{ route('carrito.checkout') }}" class="btn btn-success">Finalizar Compra</a>
+        @endif
     </div>
-@else
-    <table class="table table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio</th>
-                <th>Total</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($carrito as $detalle)
-                <tr>
-                    <td>{{ $detalle->producto->nom_producto }}</td>
-                    <td>{{ $detalle->cantidad }}</td>
-                    <td>${{ number_format($detalle->producto->precio, 0, ',', '.') }}</td>
-                    <td>${{ number_format($detalle->cantidad * $detalle->producto->precio, 0, ',', '.') }}</td>
-                    <td>
-                        <form action="{{ route('carrito.remove', ['id_carrito' => $detalle->id_carrito]) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-    <a href="{{ route('productos.index') }}" class="btn btn-primary">Seguir Comprando</a>
-@endif
 @endsection

@@ -1,43 +1,40 @@
 @extends('layouts.app')
 
-@section('title', 'Crear Producto')
-
 @section('content')
-<h1>Crear Nuevo Producto</h1>
-<form action="{{ route('productos.store') }}" method="POST">
-    @csrf
-    <div class="form-group">
-        <label for="nom_producto">Nombre</label>
-        <input type="text" name="nom_producto" id="nom_producto" class="form-control" required>
+    <div class="container">
+        <h1>Agregar Producto</h1>
+        <form action="{{ route('admin.productos.store') }}" method="POST">
+            @csrf
+            <div class="mb-3">
+                <label for="nom_producto" class="form-label">Nombre</label>
+                <input type="text" name="nom_producto" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <textarea name="descripcion" class="form-control" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="marca" class="form-label">Marca</label>
+                <input type="text" name="marca" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="precio" class="form-label">Precio</label>
+                <input type="number" name="precio" class="form-control" step="0.01" required>
+            </div>
+            <div class="mb-3">
+                <label for="stock_actual" class="form-label">Stock Actual</label>
+                <input type="number" name="stock_actual" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="id_categoria" class="form-label">Categoría</label>
+                <select name="id_categoria" class="form-select" required>
+                    @foreach($categorias as $categoria)
+                        <option value="{{ $categoria->id_categoria }}">{{ $categoria->categoria }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <a href="{{ route('admin.productos.index') }}" class="btn btn-secondary">Cancelar</a>
+        </form>
     </div>
-    <div class="form-group">
-        <label for="descripcion">Descripción</label>
-        <textarea name="descripcion" id="descripcion" class="form-control" required></textarea>
-    </div>
-    <div class="form-group">
-        <label for="marca">Marca</label>
-        <input type="text" name="marca" id="marca" class="form-control" required>
-    </div>
-    <div class="form-group">
-        <label for="precio">Precio</label>
-        <input type="number" name="precio" id="precio" class="form-control" min="0" required>
-    </div>
-    <div class="form-group">
-        <label for="stock_actual">Stock Actual</label>
-        <input type="number" name="stock_actual" id="stock_actual" class="form-control" min="0" required>
-    </div>
-    <div class="form-group">
-        <label for="stock_critico">Stock Crítico</label>
-        <input type="number" name="stock_critico" id="stock_critico" class="form-control" min="0" required>
-    </div>
-    <div class="form-group">
-        <label for="id_categoria">Categoría</label>
-        <select name="id_categoria" id="id_categoria" class="form-control">
-            @foreach($categorias as $categoria)
-                <option value="{{ $categoria->id_categoria }}">{{ $categoria->nombre_categoria }}</option>
-            @endforeach
-        </select>
-    </div>
-    <button type="submit" class="btn btn-primary">Crear</button>
-</form>
 @endsection

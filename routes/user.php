@@ -1,20 +1,20 @@
 <?php
 
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\CarritoController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GuestController;
 
-Route::middleware(['auth'])->group(function () {
-    // Dashboard del usuario
-    Route::get('/user/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
+// Rutas públicas para invitados
+Route::prefix('guest')->name('guest.')->group(function () {
+    Route::get('catalogo', [GuestController::class, 'catalogo'])->name('catalogo');  // Mostrar productos
+    Route::get('checkout', [GuestController::class, 'checkout'])->name('checkout');  // Checkout
+    Route::post('checkout/confirm', [GuestController::class, 'confirmCheckout'])->name('checkout.confirm');  // Confirmación del checkout
+});
 
-    // Carrito
-    Route::get('/carrito', [CarritoController::class, 'index'])->name('carrito.index');
-    Route::post('/carrito/add/{id_producto}', [CarritoController::class, 'add'])->name('carrito.add');
-    Route::delete('/carrito/remove/{id_carrito}', [CarritoController::class, 'remove'])->name('carrito.remove');
-    Route::post('/carrito/checkout', [CarritoController::class, 'checkout'])->name('carrito.checkout');
-
-    // Perfil del usuario
-    Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
-    Route::post('/user/profile/update', [UserController::class, 'updateProfile'])->name('user.profile.update');
+// Rutas para usuarios autenticados
+Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
+    Route::get('home', [UserController::class, 'home'])->name('home');
+    Route::get('profile', [UserController::class, 'profile'])->name('profile');
+    Route::post('profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
+    Route::get('historial-compras', [UserController::class, 'historialCompras'])->name('historial_compras');
+    Route::get('detalle-compra/{id}', [UserController::class, 'detalleCompra'])->name('detalle_compra');
 });

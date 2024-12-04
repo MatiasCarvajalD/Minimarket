@@ -1,27 +1,26 @@
 @extends('layouts.app')
 
-@section('title', 'Minimarket')
-
 @section('content')
-<h1 class="mb-4">Productos del Minimarket</h1>
-<div class="row">
-    @foreach($productos as $producto)
-        @if($producto->tipo_producto == 'minimarket')
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">{{ $producto->nom_producto }}</h5>
-                    <p class="card-text">{{ $producto->descripcion }}</p>
-                    <p class="card-text"><strong>${{ number_format($producto->precio, 0, ',', '.') }}</strong></p>
-                    <a href="{{ route('productos.show', $producto->cod_producto) }}" class="btn btn-primary">Ver Detalle</a>
-                    <form action="{{ route('carrito.add', $producto->cod_producto) }}" method="POST" class="mt-2">
-                        @csrf
-                        <button type="submit" class="btn btn-success">Agregar al Carrito</button>
-                    </form>
-                </div>
+    <div class="container">
+        <h1>Productos - Minimarket</h1>
+        @if($productos->isEmpty())
+            <p>No hay productos disponibles en esta categoría.</p>
+        @else
+            <div class="row">
+                @foreach($productos as $producto)
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ $producto->nom_producto }}</h5>
+                                <p class="card-text">{{ $producto->descripcion }}</p>
+                                <p><strong>Precio:</strong> ${{ $producto->precio }}</p>
+                                <a href="{{ route('productos.detalle', $producto->cod_producto) }}" class="btn btn-primary">Ver Detalles</a>
+                                <a href="{{ route('carrito.add', $producto->cod_producto) }}" class="btn btn-success">Agregar al Carrito</a>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
             </div>
-        </div>
         @endif
-    @endforeach
-</div>
+    </div>
 @endsection

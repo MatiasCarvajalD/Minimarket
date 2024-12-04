@@ -1,21 +1,47 @@
 @extends('layouts.app')
 
-@section('title', 'Productos')
-
 @section('content')
-<h1 class="mb-4">Lista de Productos</h1>
-<div class="row">
-    @foreach($productos as $producto)
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">{{ $producto->nom_producto }}</h5>
-                    <p class="card-text">{{ $producto->descripcion }}</p>
-                    <p class="card-text"><strong>${{ number_format($producto->precio, 0, ',', '.') }}</strong></p>
-                    <a href="{{ route('productos.show', $producto->cod_producto) }}" class="btn btn-primary">Ver Detalle</a>
-                </div>
-            </div>
-        </div>
-    @endforeach
-</div>
+    <div class="container">
+        <h1>Lista de Productos</h1>
+        <a href="{{ route('productos.create') }}" class="btn btn-primary mb-3">Agregar Producto</a>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Marca</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Categoría</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($productos as $producto)
+                    <tr>
+                        <td>{{ $producto->cod_producto }}</td>
+                        <td>{{ $producto->nom_producto }}</td>
+                        <td>{{ $producto->descripcion }}</td>
+                        <td>{{ $producto->marca }}</td>
+                        <td>${{ $producto->precio }}</td>
+                        <td>{{ $producto->stock_actual }}</td>
+                        <td>{{ $producto->tipoProducto->categoria }}</td>
+                        <td>
+                            <a href="{{ route('productos.edit', $producto->cod_producto) }}" class="btn btn-warning btn-sm">Editar</a>
+                            <form action="{{ route('productos.destroy', $producto->cod_producto) }}" method="POST" style="display: inline-block;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este producto?')">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="8" class="text-center">No hay productos disponibles.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 @endsection

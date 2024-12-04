@@ -3,17 +3,13 @@
 use Illuminate\Support\Facades\Route;
 
 
-use App\Http\Controllers\AuthController;
+// Cargar rutas separadas
+require base_path('routes/auth.php');        // Rutas de autenticación
+require base_path('routes/admin.php');       // Rutas de administración
+require base_path('routes/user.php');        // Rutas para usuarios autenticados
+require base_path('routes/guest.php');       // Rutas para invitados
+require base_path('routes/carrito.php');     // Rutas del carrito
+require base_path('routes/minimarket.php');  // Rutas del minimarket
+require base_path('routes/restaurant.php');  // Rutas del restaurante
+require base_path('routes/productos.php');   // Ruta Productos
 
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
-Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
-Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-require base_path('routes/auth.php');
-require base_path('routes/user.php');
-require base_path('routes/admin.php');
-require base_path('routes/minimarket.php');
-require base_path('routes/restaurant.php');
-require base_path('routes/guest.php');
