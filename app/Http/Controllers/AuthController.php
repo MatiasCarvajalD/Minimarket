@@ -29,10 +29,13 @@ class AuthController extends Controller
     }
 
     // Método para hacer logout
-    public function logout()
+    public function logout(Request $request)
     {
-        Auth::logout(); // Cierra la sesión
-        return redirect()->route('login'); // Redirige a la página de login
+        Auth::logout(); // Cierra la sesión del usuario
+        $request->session()->invalidate(); // Invalida la sesión actual
+        $request->session()->regenerateToken(); // Regenera el token CSRF por seguridad
+
+        return redirect('login'); // Redirige al usuario a la página principal
     }
     // Muestra el formulario de registro
     public function showRegisterForm()

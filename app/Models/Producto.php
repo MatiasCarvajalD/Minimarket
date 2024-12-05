@@ -41,5 +41,9 @@ class Producto extends Model
     {
         return $this->hasMany(DetalleCompra::class, 'cod_producto', 'cod_producto');
     }
+    public function tipoProducto()
+    {
+        return $this->belongsTo(TipoProducto::class, 'id_categoria', 'id_categoria');
+    }
 }
 

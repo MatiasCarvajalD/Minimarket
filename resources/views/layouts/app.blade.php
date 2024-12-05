@@ -10,12 +10,12 @@
     <script src="{{ asset('js/app.js') }}" defer></script>
 </head>
 <body>
-    @include('partials.header')
-
+    @if (!request()->is('login'))
+        @include('partials.header') {{-- Incluye la barra de navegación solo si no es la página de login --}}
+    @endif
     <div class="container my-4">
         @yield('content')
     </div>
 
-    @include('partials.footer')
 </body>
 </html>
