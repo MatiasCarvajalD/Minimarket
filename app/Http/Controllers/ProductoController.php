@@ -11,9 +11,15 @@ class ProductoController extends Controller
     // Muestra todos los productos
     public function index()
     {
-        $productos = Producto::with('tipoProducto')->get();
-        return view('productos.index', compact('productos'));
+        $categorias = TipoProducto::with('productos')->get(); // Cargar las categorías con sus productos
+        return view('productos.index', compact('categorias'));
     }
+    public function show($id)
+    {
+        $producto = Producto::findOrFail($id);
+        return view('productos.detalle', compact('producto'));
+    }
+
 
     // Muestra un formulario para crear un nuevo producto
     public function create()
@@ -80,26 +86,26 @@ class ProductoController extends Controller
     // Filtra productos por Minimarket
     public function minimarket()
     {
-        $productos = Producto::whereHas('tipoProducto', function ($query) {
-            $query->where('categoria', 'Minimarket');
-        })->get();
+        // Obtén las categorías y productos solo del Minimarket
+        $categorias = TipoProducto::with(['productos' => function ($query) {
+            $query->whereIn('id_categoria', [1, 2, 3, 4, 5, 6, 7]); // Filtra las categorías del Minimarket
+        }])->whereIn('id_categoria', [1, 2, 3, 4, 5, 6, 7])->get();
 
-        return view('Usuario.minimarket', compact('productos')); 
+        return view('productos.index', compact('categorias'));
     }
 
-    // Filtra productos por Restaurant
+    
+
     public function restaurant()
     {
-        $productos = Producto::whereHas('tipoProducto', function ($query) {
-            $query->where('categoria', 'Restaurant');
-        })->get();
+        // Obtén solo las categorías del Restaurante (id_categoria >= 8 en este caso)
+        $categorias = TipoProducto::with(['productos' => function ($query) {
+            $query->whereIn('id_categoria', [8, 9, 10, 11, 12, 13, 14]); // Categorías del Restaurante
+        }])->whereIn('id_categoria', [8, 9, 10, 11, 12, 13, 14])->get();
 
-        return view('Usuario.restaurant', compact('productos'));
+        return view('restaurant.index', compact('categorias'));
     }
 
-    public function show($id)
-    {
-        $producto = Producto::with('tipoProducto')->findOrFail($id);
-        return view('productos.detalle', compact('producto'));
-    }
+
+
 }

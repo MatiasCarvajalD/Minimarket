@@ -13,6 +13,7 @@ class CreateDetalleVentaTable extends Migration
             $table->unsignedBigInteger('cod_producto'); // FK
             $table->unsignedTinyInteger('cantidad');
             $table->integer('valor_unidad');
+            $table->timestamps();
             $table->primary(['id_venta', 'cod_producto']); // Clave primaria compuesta
             $table->foreign('id_venta')->references('id_venta')->on('ventas')->cascadeOnDelete();
             $table->foreign('cod_producto')->references('cod_producto')->on('productos')->cascadeOnDelete();

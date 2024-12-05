@@ -12,9 +12,6 @@ class DatabaseSeeder extends Seeder
             TipoProductoSeeder::class,
             ProductoSeeder::class,
             UsuarioSeeder::class,
-            VentaSeeder::class,
-            DetalleVentaSeeder::class,
-            CarritoSeeder::class,
             ProveedorSeeder::class,
         ]);
     }

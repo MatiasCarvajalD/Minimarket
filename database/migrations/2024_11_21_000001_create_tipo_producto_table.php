@@ -10,7 +10,7 @@ class CreateTipoProductoTable extends Migration
     {
         Schema::create('tipo_producto', function (Blueprint $table) {
             $table->id('id_categoria'); // Clave primaria
-            $table->string('categoria', 15); // Nombre de la categoría
+            $table->string('categoria', 50); // Nombre de la categoría
             $table->timestamps();
         });
     }
