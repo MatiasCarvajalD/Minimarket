@@ -37,34 +37,32 @@
         </table>
         <h3 class="text-end">Total: ${{ number_format($total, 0, ',', '.') }}</h3>
 
-        <!-- Formulario para confirmar compra -->
-        <form action="{{ route('carrito.confirmCheckout') }}" method="POST" class="mt-4">
+        <form action="{{ route('carrito.confirmCheckout') }}" method="POST">
             @csrf
-            <div class="mb-3">
-                <label for="direccion" class="form-label">Dirección de Envío</label>
-                <input type="text" name="direccion" id="direccion" class="form-control" value="{{ auth()->user()->direccion }}" required>
-            </div>
-
             <div class="mb-3">
                 <label for="tipo_entrega" class="form-label">Tipo de Entrega</label>
                 <select name="tipo_entrega" id="tipo_entrega" class="form-select" required>
-                    <option value="">Seleccionar...</option>
-                    <option value="delivery">Delivery</option>
+                    <option value="">Selecciona una opción</option>
                     <option value="retiro">Retiro en Tienda</option>
+                    <option value="delivery">Delivery</option>
                 </select>
             </div>
-
+            <div class="mb-3">
+                <label for="direccion" class="form-label">Dirección de Envío (solo para delivery)</label>
+                <input type="text" name="direccion" id="direccion" class="form-control">
+            </div>
             <div class="mb-3">
                 <label for="metodo_pago" class="form-label">Método de Pago</label>
                 <select name="metodo_pago" id="metodo_pago" class="form-select" required>
-                    <option value="">Seleccionar...</option>
+                    <option value="">Selecciona una opción</option>
                     <option value="efectivo">Efectivo</option>
                     <option value="tarjeta">Tarjeta</option>
                 </select>
             </div>
-
-            <button type="submit" class="btn btn-success w-100">Confirmar Compra</button>
+            <button type="submit" class="btn btn-success">Confirmar Compra</button>
         </form>
+        
+        
     @endif
 </div>
 @endsection

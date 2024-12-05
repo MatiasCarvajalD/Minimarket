@@ -31,16 +31,18 @@
                     @auth
                     <div class="dropdown">
                         <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            Hola, Usuario
+                            <span class="text-light me-3">Hola, {{ auth()->user()->nombre_usuario }}</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li><a class="dropdown-item" href="/user/profile">Mi Perfil</a></li>
                             <li><a class="dropdown-item" href="/user/historial-compras">Historial de Compras</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <form id="logout-form" action="/logout" method="POST">
-                                    <button type="submit" class="dropdown-item">Cerrar Sesión</button>
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-link">Cerrar sesión</button>
                                 </form>
+                                
                             </li>
                         </ul>
                     </div>

@@ -14,6 +14,9 @@ class Venta extends Model
 
     protected $fillable = [
         'rut_usuario',
+        'tipo_entrega',
+        'metodo_pago',
+        'entrega_completada',
         'fecha',
         'total',
     ];

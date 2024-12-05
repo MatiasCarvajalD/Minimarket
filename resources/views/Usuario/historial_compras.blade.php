@@ -21,7 +21,15 @@
                         <tr>
                             <td>{{ $venta->id_venta }}</td>
                             <td>{{ $venta->fecha }}</td>
-                            <td>{{ $venta->tipo_entrega == 1 ? 'Retiro' : 'Delivery' }}</td>
+                            <td>
+                                @if($venta->tipo_entrega === 'retiro')
+                                    Retiro en Tienda
+                                @elseif($venta->tipo_entrega === 'delivery')
+                                    Delivery a Domicilio
+                                @else
+                                    No especificado
+                                @endif
+                            </td>
                             <td>{{ $venta->entrega_completada ? 'Completada' : 'Pendiente' }}</td>
                             <td>
                                 <a href="{{ route('user.detalle_compra', $venta->id_venta) }}" class="btn btn-primary btn-sm">Ver Detalle</a>

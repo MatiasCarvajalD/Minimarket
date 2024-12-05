@@ -11,7 +11,8 @@ class CreateVentasTable extends Migration
         Schema::create('ventas', function (Blueprint $table) {
             $table->id('id_venta'); // Clave primaria
             $table->unsignedBigInteger('rut_usuario'); // FK
-            $table->string('tipo_entrega')->default('retiro');
+            $table->string('tipo_entrega');
+            $table->string('metodo_pago');
             $table->boolean('entrega_completada')->default(false);
             $table->date('fecha')->default(now());
             $table->timestamps(); // Incluye created_at y updated_at

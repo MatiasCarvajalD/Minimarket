@@ -75,26 +75,39 @@ class CarritoController extends Controller
     
 
 
+
     public function confirmCheckout(Request $request)
     {
-        $validated = $request->validate([
-            'tipo_entrega' => 'required|string|in:delivery,retiro',
-        ]);
-    
+        
+        // Obtener los productos del carrito del usuario
         $carrito = Carrito::where('rut_usuario', auth()->user()->rut_usuario)->get();
     
+        // Verificar si el carrito está vacío
         if ($carrito->isEmpty()) {
             return redirect()->route('carrito.index')->with('error', 'El carrito está vacío.');
         }
     
+        // Validar los datos enviados por el formulario
+        $validated = $request->validate([
+            'tipo_entrega' => 'required|string|in:delivery,retiro', // Tipo de entrega obligatorio
+            'direccion' => 'nullable|string|max:255', // Dirección solo para delivery
+            'metodo_pago' => 'required|string|in:efectivo,tarjeta', // Método de pago obligatorio
+        ]);
+    
+        // Capturar los valores validados
+        $tipoEntrega = $validated['tipo_entrega'];
+        $direccion = ($tipoEntrega === 'delivery') ? $validated['direccion'] : null;
+        $metodoPago = $validated['metodo_pago'];
+    
         // Crear la venta
         $venta = Venta::create([
             'rut_usuario' => auth()->user()->rut_usuario,
-            'tipo_entrega' => $validated['tipo_entrega'],
+            'tipo_entrega' => $tipoEntrega,
+            'metodo_pago' => $metodoPago,
             'entrega_completada' => false,
         ]);
     
-        // Registrar los detalles de la venta
+        // Guardar los detalles de la venta
         foreach ($carrito as $item) {
             DetalleVenta::create([
                 'id_venta' => $venta->id_venta,
@@ -104,11 +117,13 @@ class CarritoController extends Controller
             ]);
         }
     
-        // Vaciar el carrito
+        // Vaciar el carrito después de la compra
         Carrito::where('rut_usuario', auth()->user()->rut_usuario)->delete();
     
-        return redirect()->route('carrito.index')->with('success', 'Compra realizada con éxito.');
+        // Redirigir al historial de compras con mensaje de éxito
+        return redirect()->route('user.historial_compras')->with('success', 'Compra realizada con éxito.');
     }
+   
     
 
 

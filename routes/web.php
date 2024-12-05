@@ -2,9 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/prueba', function () {
-    return view('prueba');
-})->name('prueba');
 
 // Cargar rutas separadas
 require base_path('routes/auth.php');        // Rutas de autenticación

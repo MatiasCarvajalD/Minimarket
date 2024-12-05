@@ -33,16 +33,19 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
+    
         $validated = $request->validate([
             'nombre_usuario' => 'required|string|max:255',
-            'email' => 'required|email|unique:usuarios,email,' . $user->id,
+            'email' => 'required|email|unique:usuarios,email,' . $user->rut_usuario . ',rut_usuario',
             'telefono' => 'nullable|string|max:15',
             'direccion' => 'nullable|string|max:255',
         ]);
+        
+    
+        $user->forceFill($validated)->save();
 
-        $user->update($validated);
-
-        return redirect()->route('user.profile')->with('success', 'Perfil actualizado.');
+    
+        return redirect()->route('user.profile')->with('success', 'Perfil actualizado correctamente.');
     }
 
     public function historialCompras()
