@@ -1,11 +1,19 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
-// Rutas para la autenticación
-Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('login', [AuthController::class, 'login'])->name('login.submit');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+// Ruta para mostrar el formulario de registro
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 
-Route::get('register', [AuthController::class, 'showRegisterForm'])->name('register');
-Route::post('register', [AuthController::class, 'register'])->name('register.submit');
+// Ruta para procesar el registro
+Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
+
+// Ruta para mostrar el formulario de login
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+
+// Ruta para procesar el login
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
+// Ruta para cerrar sesión
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

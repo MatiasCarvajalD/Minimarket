@@ -17,5 +17,16 @@
         </div>
         <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
     </form>
+    <hr>
+    <!-- Opción para iniciar como invitado -->
+    <form method="POST" action="{{ route('login') }}">
+        @csrf
+        <input type="hidden" name="email" value="invitado@example.com">
+        <input type="hidden" name="password" value="password_invitado"> <!-- Ajusta la contraseña según corresponda -->
+        <button type="submit" class="btn btn-secondary">Iniciar como Invitado</button>
+    </form>
+    <hr>
+    <!-- Enlace para registrarse -->
+    <p>¿No tienes una cuenta? <a href="{{ route('register') }}">Regístrate aquí</a></p>
 </div>
 @endsection
