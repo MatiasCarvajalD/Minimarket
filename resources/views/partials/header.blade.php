@@ -12,7 +12,19 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="{{ route('user.home') }}">Minimarket & Restaurant</a>
+                <a href="
+                    @if (auth()->check() && auth()->user()->rol === 'usuario')
+                        {{ route('user.home') }}
+                    @elseif (auth()->check() && auth()->user()->rol === 'invitado')
+                        {{ route('guest.home') }}
+                    @else
+                        {{ route('login') }}
+                    @endif
+                " class="nav-link" style="color: #007bff; text-decoration: none;">
+                    Minimarket & Restaurant
+                </a>
+
+
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>

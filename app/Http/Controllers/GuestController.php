@@ -3,11 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Producto;
+use App\Models\Venta; // Importa el modelo Venta
+use App\Models\DetalleVenta; // Si usas DetalleVenta en el controlador
+use App\Models\Producto; // Si usas Producto en el controlador
+use Illuminate\Support\Facades\Auth;
 
 class GuestController extends Controller
 {
-    // Muestra el catálogo de productos
+    public function home()
+    {
+        return view('guest.home');
+    }
+
     public function catalogo()
     {
         $productos = Producto::all();
@@ -21,69 +28,62 @@ class GuestController extends Controller
         return view('productos.detalle', compact('producto'));
     }
 
-    // Muestra el carrito del invitado (almacenado en la sesión)
-    public function carrito()
+    // Maneja el checkout
+    public function checkout(Request $request)
     {
-        $carrito = session('carrito', []);
-        return view('carrito.index', compact('carrito'));
-    }
-
-    // Agrega un producto al carrito
-    public function addToCart($cod_producto)
-    {
-        $producto = Producto::findOrFail($cod_producto);
-        $carrito = session('carrito', []);
-
-        if (isset($carrito[$cod_producto])) {
-            $carrito[$cod_producto]['cantidad'] += 1;
-        } else {
-            $carrito[$cod_producto] = [
-                'producto' => $producto,
-                'cantidad' => 1,
-            ];
-        }
-
-        session(['carrito' => $carrito]);
-
-        return redirect()->route('guest.carrito')->with('success', 'Producto agregado al carrito.');
-    }
-
-    // Elimina un producto del carrito
-    public function removeFromCart($cod_producto)
-    {
-        $carrito = session('carrito', []);
-        unset($carrito[$cod_producto]);
-        session(['carrito' => $carrito]);
-
-        return redirect()->route('guest.carrito')->with('success', 'Producto eliminado del carrito.');
-    }
-
-    // Muestra el formulario de checkout
-    public function checkout()
-    {
-        $carrito = session('carrito', []);
-
-        if (empty($carrito)) {
-            return redirect()->route('guest.carrito')->with('error', 'El carrito está vacío.');
-        }
-
-        return view('carrito.checkout_guest', compact('carrito'));
-    }
-
-    // Procesa la compra del invitado
-    public function confirmCheckout(Request $request)
-    {
+        // Validar datos
         $validated = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'email' => 'required|email',
-            'direccion' => 'required|string|max:255',
-            'metodo_pago' => 'required|string|in:efectivo,tarjeta',
+            'delivery_option' => 'required|in:pickup,delivery',
+            'nombre' => 'required_if:delivery_option,delivery|max:255',
+            'direccion' => 'required_if:delivery_option,delivery|max:255',
+            'telefono' => 'required_if:delivery_option,delivery|numeric',
+            'correo' => 'required_if:delivery_option,delivery|email',
         ]);
-
-        // Procesar la compra como invitado (puedes guardar estos datos en una tabla de pedidos)
-
-        session()->forget('carrito'); // Vaciar el carrito tras finalizar la compra
-
-        return redirect()->route('guest.catalogo')->with('success', 'Compra realizada con éxito.');
+    
+        // Crear datos del pedido
+        $pedido = [
+            'carrito' => session('carrito', []), // Supongo que tienes el carrito en la sesión
+            'delivery_option' => $validated['delivery_option'],
+            'datos_entrega' => $validated['delivery_option'] === 'delivery' ? [
+                'nombre' => $validated['nombre'],
+                'direccion' => $validated['direccion'],
+                'telefono' => $validated['telefono'],
+                'correo' => $validated['correo'],
+            ] : null,
+        ];
+    
+        // Guardar en sesión (simulación para invitados)
+        session(['pedido' => $pedido]);
+    
+        // Redirigir a la confirmación
+        return redirect()->route('guest.checkout.confirm')->with('success', 'Pedido procesado exitosamente.');
     }
+    
+
+    public function confirmacion()
+    {
+        // Obtener la última venta del usuario autenticado
+        $venta = Venta::where('rut_usuario', auth()->user()->rut_usuario)
+            ->with('detalles.producto') // Cargar detalles y productos relacionados
+            ->latest('created_at') // Ordenar por la venta más reciente
+            ->first();
+    
+        // Validar que se haya encontrado una venta
+        if (!$venta) {
+            return redirect()->route('guest.home')->with('error', 'No se encontró una venta reciente.');
+        }
+    
+        // Datos del comprador
+        $comprador = auth()->user()->rol === 'invitado'
+            ? (object) session('guest_data') // Obtener datos de la sesión para invitados
+            : auth()->user(); // Obtener datos del modelo de usuario para usuarios registrados
+    
+        // Pasar datos a la vista
+        return view('guest.confirmacion', compact('venta', 'comprador'));
+    }
+    
+
+    
+    
+    
 }

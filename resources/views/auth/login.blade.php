@@ -22,7 +22,7 @@
     <form method="POST" action="{{ route('login') }}">
         @csrf
         <input type="hidden" name="email" value="invitado@example.com">
-        <input type="hidden" name="password" value="password_invitado"> <!-- Ajusta la contraseña según corresponda -->
+        <input type="hidden" name="password" value="invitado"> <!-- Ajusta la contraseña según corresponda -->
         <button type="submit" class="btn btn-secondary">Iniciar como Invitado</button>
     </form>
     <hr>

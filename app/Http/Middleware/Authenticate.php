@@ -2,25 +2,31 @@
 
 namespace App\Http\Middleware;
 
+use Closure;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 
 class Authenticate extends Middleware
 {
     /**
-     * Obtén la ruta a la que el usuario debería ser redirigido si no está autenticado.
+     * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return string|null
+     * @param  \Closure  $next
+     * @param  mixed  ...$guards
+     * @return mixed
      */
     public function handle($request, Closure $next, ...$guards)
     {
-        if (! auth()->check()) {
-            \Log::info('Usuario no autenticado. Redirigiendo al login.');
-            return redirect()->route('login');
+        // Permitir el acceso a las rutas con el prefijo 'guest' sin autenticación
+        if ($request->is('guest/*')) {
+            return $next($request);
         }
 
-        \Log::info('Usuario autenticado.');
+        // Redirigir al login si no está autenticado
+        if (! auth()->check()) {
+            abort(403, 'Acceso denegado. Usuario no autenticado.');
+        }
+
         return $next($request);
     }
-
 }

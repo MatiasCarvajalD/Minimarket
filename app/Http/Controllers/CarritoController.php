@@ -22,11 +22,10 @@ class CarritoController extends Controller
         return view('carrito.index', compact('carrito'));
     }
 
-    // Agrega un producto al carrito
     public function add($cod_producto)
     {
         $producto = Producto::findOrFail($cod_producto);
-
+    
         Carrito::updateOrCreate(
             [
                 'rut_usuario' => auth()->user()->rut_usuario,
@@ -36,9 +35,10 @@ class CarritoController extends Controller
                 'cantidad' => \DB::raw('cantidad + 1'),
             ]
         );
-
+    
         return redirect()->route('carrito.index')->with('success', 'Producto agregado al carrito.');
     }
+    
 
     // Elimina un producto del carrito
     public function remove($id_carrito)
@@ -52,62 +52,73 @@ class CarritoController extends Controller
     // Muestra el formulario de checkout
     public function checkout()
     {
-        $carrito = Carrito::where('rut_usuario', auth()->user()->rut_usuario)->get();
+        $carrito = Carrito::where('rut_usuario', auth()->user()->rut_usuario)->with('producto')->get();
     
         if ($carrito->isEmpty()) {
             return redirect()->route('carrito.index')->with('error', 'Tu carrito está vacío.');
         }
     
-        // La dirección del usuario ya está almacenada en auth()->user()->direccion
         return view('carrito.checkout', compact('carrito'));
     }
     
-    public function confirm(Request $request)
-    {
-        $carrito = Carrito::where('rut_usuario', auth()->user()->rut_usuario)->get();
     
-        if ($carrito->isEmpty()) {
-            return redirect()->route('carrito.index')->with('error', 'Tu carrito está vacío.');
+    public function confirm()
+    {
+        $venta = Venta::where('rut_usuario', auth()->user()->rut_usuario)
+            ->with('detalles.producto')
+            ->latest('created_at')
+            ->first();
+    
+        if (!$venta) {
+            return redirect()->route('guest.home')->with('error', 'No se encontró una venta reciente.');
         }
     
-        return view('carrito.confirm', compact('carrito'));
+        $comprador = auth()->user(); // Datos del usuario autenticado
+    
+        return view('carrito.confirm', compact('venta', 'comprador'));
     }
     
-
-
-
+    
+    
     public function confirmCheckout(Request $request)
     {
-        
-        // Obtener los productos del carrito del usuario
         $carrito = Carrito::where('rut_usuario', auth()->user()->rut_usuario)->get();
     
-        // Verificar si el carrito está vacío
         if ($carrito->isEmpty()) {
             return redirect()->route('carrito.index')->with('error', 'El carrito está vacío.');
         }
     
         // Validar los datos enviados por el formulario
         $validated = $request->validate([
-            'tipo_entrega' => 'required|string|in:delivery,retiro', // Tipo de entrega obligatorio
-            'direccion' => 'nullable|string|max:255', // Dirección solo para delivery
-            'metodo_pago' => 'required|string|in:efectivo,tarjeta', // Método de pago obligatorio
+            'tipo_entrega' => 'required|string|in:delivery,retiro',
+            'direccion' => $request->tipo_entrega === 'delivery' ? 'required|string|max:255' : 'nullable',
+            'metodo_pago' => 'required|string|in:efectivo,tarjeta',
+            'nombre' => auth()->user()->rol === 'invitado' ? 'required|string|max:255' : 'nullable',
+            'telefono' => auth()->user()->rol === 'invitado' ? 'required|numeric' : 'nullable',
+            'correo' => auth()->user()->rol === 'invitado' ? 'required|email' : 'nullable',
         ]);
     
-        // Capturar los valores validados
-        $tipoEntrega = $validated['tipo_entrega'];
-        $direccion = ($tipoEntrega === 'delivery') ? $validated['direccion'] : null;
-        $metodoPago = $validated['metodo_pago'];
+        // Guardar datos del invitado en la sesión
+        if (auth()->user()->rol === 'invitado') {
+            session([
+                'guest_data' => [
+                    'direccion' => $validated['direccion'],
+                    'nombre' => $validated['nombre'],
+                    'telefono' => $validated['telefono'],
+                    'correo' => $validated['correo'],
+                ],
+            ]);
+        }
     
         // Crear la venta
         $venta = Venta::create([
             'rut_usuario' => auth()->user()->rut_usuario,
-            'tipo_entrega' => $tipoEntrega,
-            'metodo_pago' => $metodoPago,
+            'tipo_entrega' => $validated['tipo_entrega'],
+            'metodo_pago' => $validated['metodo_pago'],
             'entrega_completada' => false,
         ]);
     
-        // Guardar los detalles de la venta
+        // Guardar detalles de la venta
         foreach ($carrito as $item) {
             DetalleVenta::create([
                 'id_venta' => $venta->id_venta,
@@ -120,23 +131,27 @@ class CarritoController extends Controller
         // Vaciar el carrito después de la compra
         Carrito::where('rut_usuario', auth()->user()->rut_usuario)->delete();
     
-        // Redirigir al historial de compras con mensaje de éxito
-        return redirect()->route('user.historial_compras')->with('success', 'Compra realizada con éxito.');
+        // Redirigir según el tipo de usuario
+        if (auth()->user()->rol === 'invitado') {
+            return redirect()->route('guest.confirmacion')->with('venta_id', $venta->id_venta);
+        } else {
+            return redirect()->route('carrito.confirm')->with('venta_id', $venta->id_venta);
+        }
     }
-   
-    
-
-
 
     public function showConfirm()
     {
-        $carrito = Carrito::where('rut_usuario', auth()->user()->rut_usuario)->get();
+        // Obtener la última venta del usuario autenticado
+        $venta = Venta::where('rut_usuario', auth()->user()->rut_usuario)
+            ->latest('created_at')
+            ->with('detalles.producto') // Relación con los detalles y productos comprados
+            ->first();
 
-        if ($carrito->isEmpty()) {
-            return redirect()->route('carrito.index')->with('error', 'Tu carrito está vacío.');
+        if (!$venta) {
+            return redirect()->route('carrito.index')->with('error', 'No se encontró ninguna venta reciente.');
         }
 
-        return view('carrito.confirm', compact('carrito'));
+        return view('carrito.confirm', compact('venta'));
     }
 
 

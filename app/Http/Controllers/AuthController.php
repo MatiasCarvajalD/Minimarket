@@ -19,15 +19,20 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
-
+    
         if (Auth::attempt($credentials)) {
-            // Redirige al usuario a la página de inicio
-            return redirect()->route('user.home');
+            // Redirigir según el rol del usuario
+            $user = Auth::user();
+            if ($user->rol === 'invitado') {
+                return redirect()->route('guest.home');
+            } else {
+                return redirect()->route('user.home');
+            }
         }
-
-        // Si las credenciales no son correctas, vuelve al login con un error
+    
         return redirect()->route('login')->withErrors(['email' => 'Credenciales incorrectas']);
     }
+    
 
     // Método para hacer logout
     public function logout(Request $request)

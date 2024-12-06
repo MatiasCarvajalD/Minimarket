@@ -15,54 +15,69 @@
                 <tr>
                     <th>Producto</th>
                     <th>Cantidad</th>
-                    <th>Precio Unitario</th>
-                    <th>Subtotal</th>
+                    <th>Precio</th>
+                    <th>Total</th>
                 </tr>
             </thead>
             <tbody>
-                @php $total = 0; @endphp
                 @foreach ($carrito as $item)
-                    @php
-                        $subtotal = $item->cantidad * $item->producto->precio;
-                        $total += $subtotal;
-                    @endphp
-                    <tr>
-                        <td>{{ $item->producto->nom_producto }}</td>
-                        <td>{{ $item->cantidad }}</td>
-                        <td>${{ number_format($item->producto->precio, 0, ',', '.') }}</td>
-                        <td>${{ number_format($subtotal, 0, ',', '.') }}</td>
-                    </tr>
+                <tr>
+                    <td>{{ $item->producto->nom_producto }}</td>
+                    <td>{{ $item->cantidad }}</td>
+                    <td>${{ number_format($item->producto->precio, 0, ',', '.') }}</td>
+                    <td>${{ number_format($item->cantidad * $item->producto->precio, 0, ',', '.') }}</td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
-        <h3 class="text-end">Total: ${{ number_format($total, 0, ',', '.') }}</h3>
 
-        <form action="{{ route('carrito.confirmCheckout') }}" method="POST">
+        <form method="POST" action="{{ route('carrito.confirmCheckout') }}">
             @csrf
-            <div class="mb-3">
-                <label for="tipo_entrega" class="form-label">Tipo de Entrega</label>
-                <select name="tipo_entrega" id="tipo_entrega" class="form-select" required>
-                    <option value="">Selecciona una opción</option>
-                    <option value="retiro">Retiro en Tienda</option>
+    
+            <!-- Método de entrega -->
+            <div class="form-group">
+                <label for="tipo_entrega">Método de entrega</label>
+                <select id="tipo_entrega" name="tipo_entrega" class="form-control" onchange="toggleAddressField(this.value)" required>
+                    <option value="retiro">Retiro en tienda</option>
                     <option value="delivery">Delivery</option>
                 </select>
             </div>
-            <div class="mb-3">
-                <label for="direccion" class="form-label">Dirección de Envío (solo para delivery)</label>
-                <input type="text" name="direccion" id="direccion" class="form-control">
+    
+            <!-- Dirección solo para invitados -->
+            @if(auth()->user()->rol === 'invitado')
+            <div id="direccion_field" style="display: none;">
+                <label for="direccion" class="form-label">Dirección</label>
+                <input type="text" id="direccion" name="direccion" class="form-control" placeholder="Ingresa tu dirección">
             </div>
-            <div class="mb-3">
-                <label for="metodo_pago" class="form-label">Método de Pago</label>
-                <select name="metodo_pago" id="metodo_pago" class="form-select" required>
-                    <option value="">Selecciona una opción</option>
+            @else
+            <div id="direccion_field" class="mt-3">
+                <label for="direccion" class="form-label">Dirección</label>
+                <div class="alert alert-info p-2" role="alert">
+                    <strong>{{ auth()->user()->direccion }}</strong>
+                </div>
+                <input type="hidden" id="direccion" name="direccion" value="{{ auth()->user()->direccion }}">
+            </div>
+            @endif
+
+
+            <!-- Método de pago -->
+            <div class="form-group">
+                <label for="metodo_pago">Método de pago</label>
+                <select id="metodo_pago" name="metodo_pago" class="form-control" required>
                     <option value="efectivo">Efectivo</option>
                     <option value="tarjeta">Tarjeta</option>
                 </select>
             </div>
-            <button type="submit" class="btn btn-success">Confirmar Compra</button>
+    
+            <button type="submit" class="btn btn-primary">Finalizar Compra</button>
         </form>
-        
-        
-    @endif
+    @endif 
 </div>
+
+<script>
+    function toggleAddressField(tipoEntrega) {
+        const addressField = document.getElementById('direccion_field');
+        addressField.style.display = (tipoEntrega === 'delivery') ? 'block' : 'none';
+    }
+</script>
 @endsection

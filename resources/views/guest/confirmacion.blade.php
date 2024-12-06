@@ -9,19 +9,18 @@
     <ul>
         <li><strong>Método de entrega:</strong> {{ $venta->tipo_entrega }}</li>
         @if ($venta->tipo_entrega === 'delivery')
-            <li><strong>Dirección:</strong> {{ auth()->user()->direccion }}</li>
+            <li><strong>Dirección:</strong> {{ session('guest_data.direccion') }}</li>
         @endif
         <li><strong>Método de pago:</strong> {{ ucfirst($venta->metodo_pago) }}</li>
         <li><strong>Estado de entrega:</strong> {{ $venta->entrega_completada ? 'Completada' : 'Pendiente' }}</li>
     </ul>
+
     <h3>Datos del Comprador</h3>
     <ul>
-        <li><strong>Nombre:</strong> {{ auth()->user()->nombre_usuario }}</li>
-        <li><strong>Teléfono:</strong> {{ auth()->user()->telefono }}</li>
-        <li><strong>Correo:</strong> {{ auth()->user()->email }}</li>
-        <li><strong>Dirección:</strong> {{ auth()->user()->direccion }}</li>
+        <li><strong>Nombre:</strong> {{ session('guest_data.nombre') }}</li>
+        <li><strong>Teléfono:</strong> {{ session('guest_data.telefono') }}</li>
+        <li><strong>Correo:</strong> {{ session('guest_data.correo') }}</li>
     </ul>
-    
 
     <h3>Productos Comprados</h3>
     <table class="table table-bordered">

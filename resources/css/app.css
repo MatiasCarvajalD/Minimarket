@@ -3,3 +3,12 @@
 @tailwind utilities;
 
 @import "~bootstrap/dist/css/bootstrap.min.css";
+
+.nav-link {
+    color: #007bff;  /* Cambia el color del texto a un color visible, como azul */
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    color: #0056b3;  /* Cambia el color al pasar el mouse, por ejemplo un tono más oscuro de azul */
+}
