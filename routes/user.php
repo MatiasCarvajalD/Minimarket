@@ -11,7 +11,7 @@ Route::prefix('guest')->name('guest.')->group(function () {
 });
 
 // Rutas para usuarios autenticados
-Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
+Route::middleware(['auth','role:usuario'])->prefix('user')->name('user.')->group(function () {
     Route::get('home', [UserController::class, 'home'])->name('home');
     Route::get('profile', [UserController::class, 'profile'])->name('profile');
     Route::post('profile/update', [UserController::class, 'updateProfile'])->name('profile.update');

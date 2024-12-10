@@ -3,7 +3,8 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProductoController;
 
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('usuarios', [AdminController::class, 'usuariosIndex'])->name('usuarios.index');
     Route::get('usuarios/create', [AdminController::class, 'usuariosCreate'])->name('usuarios.create');
     Route::post('usuarios', [AdminController::class, 'usuariosStore'])->name('usuarios.store');
