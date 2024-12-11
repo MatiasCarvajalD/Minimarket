@@ -7,15 +7,33 @@
     <h1>Login</h1>
     <form method="POST" action="{{ route('login') }}">
         @csrf
-        <div class="form-group">
-            <label for="email">Correo Electrónico</label>
-            <input type="email" id="email" name="email" class="form-control" required>
+        <div class="mb-3">
+            <label for="email" class="form-label">Correo electrónico</label>
+            <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required>
+            @error('email')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
         </div>
-        <div class="form-group">
-            <label for="password">Contraseña</label>
-            <input type="password" id="password" name="password" class="form-control" required>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Contraseña</label>
+            <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
+            @error('password')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
         </div>
-        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
+        <button type="submit" class="btn btn-primary">Iniciar sesión</button>
     </form>
     <hr>
     <!-- Opción para iniciar como invitado -->
