@@ -30,4 +30,11 @@ class Venta extends Model
     {
         return $this->hasMany(DetalleVenta::class, 'id_venta', 'id_venta');
     }
+        // Método para calcular el total de la venta
+    public function calculateTotal()
+    {
+        return $this->detalles->sum(function ($detalle) {
+            return $detalle->cantidad * $detalle->valor_unidad;
+        });
+    }
 }

@@ -32,7 +32,21 @@ class AuthController extends Controller
     
         return redirect()->route('login')->withErrors(['email' => 'Credenciales incorrectas']);
     }
-    
+
+    public function loginAsGuest()
+    {
+        // Fetch the existing 'invitado' user from the database
+        $guestUser = User::where('rol', 'invitado')->first();
+
+        if (!$guestUser) {
+            return redirect()->route('login')->withErrors(['guest' => 'Usuario invitado no configurado.']);
+        }
+
+        // Log in as the "invitado" user
+        Auth::login($guestUser);
+
+        return redirect()->route('guest.home')->with('success', 'Has iniciado sesión como invitado.');
+    }
 
     // Método para hacer logout
     public function logout(Request $request)
@@ -67,9 +81,11 @@ class AuthController extends Controller
 
         return redirect()->route('login')->with('success', 'Registro exitoso.');
     }
+    
     protected function redirectTo()
     {
         return route('user.home');  // Asegúrate de que esta ruta esté definida
     }
+
 
 }

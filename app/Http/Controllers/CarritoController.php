@@ -15,27 +15,24 @@ class CarritoController extends Controller
         $this->middleware('auth');
     }
 
-    // Muestra el carrito del usuario
     public function index()
     {
         $carrito = Carrito::where('rut_usuario', auth()->user()->rut_usuario)->with('producto')->get();
-        return view('carrito.index', compact('carrito'));
+
+        $subtotal = $carrito->sum(fn($item) => $item->calculateSubtotal());
+
+        return view('carrito.index', compact('carrito', 'subtotal'));
     }
 
     public function add($cod_producto)
     {
         $producto = Producto::findOrFail($cod_producto);
-    
+
         Carrito::updateOrCreate(
-            [
-                'rut_usuario' => auth()->user()->rut_usuario,
-                'cod_producto' => $producto->cod_producto,
-            ],
-            [
-                'cantidad' => \DB::raw('cantidad + 1'),
-            ]
+            ['rut_usuario' => auth()->user()->rut_usuario, 'cod_producto' => $producto->cod_producto],
+            ['cantidad' => \DB::raw('cantidad + 1')]
         );
-    
+
         return redirect()->route('carrito.index')->with('success', 'Producto agregado al carrito.');
     }
     
@@ -47,6 +44,16 @@ class CarritoController extends Controller
         $carrito->delete();
 
         return redirect()->route('carrito.index')->with('success', 'Producto eliminado del carrito.');
+    }
+
+    public function updateQuantity(Request $request, $id_carrito)
+    {
+        $validated = $request->validate(['cantidad' => 'required|integer|min:1']);
+
+        $carritoItem = Carrito::findOrFail($id_carrito);
+        $carritoItem->update(['cantidad' => $validated['cantidad']]);
+
+        return redirect()->route('carrito.index')->with('success', 'Cantidad actualizada.');
     }
 
     // Muestra el formulario de checkout

@@ -11,7 +11,7 @@ class User extends Authenticatable
 
     protected $table = 'usuarios';
     protected $primaryKey = 'rut_usuario';
-    public $incrementing = false; // Si `rut_usuario` no es autoincremental
+    public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -20,7 +20,6 @@ class User extends Authenticatable
         'email',
         'password',
         'telefono',
-        'direccion',
         'rol',
     ];
 
@@ -33,4 +32,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Venta::class, 'rut_usuario', 'rut_usuario');
     }
+    public function currentCarrito()
+    {
+        return $this->carrito()->get();
+    }
+
+    // Método para obtener ventas recientes
+    public function recentVentas()
+    {
+        return $this->ventas()->orderBy('fecha', 'desc')->limit(5)->get();
+    }
+    public function direcciones()
+    {
+        return $this->hasMany(Direccion::class, 'rut_usuario', 'rut_usuario');
+    }
+
 }

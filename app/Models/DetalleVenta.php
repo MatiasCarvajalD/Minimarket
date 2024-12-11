@@ -27,4 +27,9 @@ class DetalleVenta extends Model
     {
         return $this->belongsTo(Venta::class, 'id_venta', 'id_venta');
     }
+    
+    public function calculateSubtotal()
+    {
+        return $this->cantidad * $this->valor_unidad;
+    }
 }

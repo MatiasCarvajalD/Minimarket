@@ -27,4 +27,8 @@ class Carrito extends Model
     {
         return $this->belongsTo(Producto::class, 'cod_producto', 'cod_producto');
     }
+    public function calculateSubtotal()
+    {
+        return $this->producto->precio * $this->cantidad;
+    }
 }
