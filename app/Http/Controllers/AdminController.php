@@ -51,9 +51,9 @@ class AdminController extends Controller
         return view('admin.productos.index', compact('productos'));
     }
 
-    public function pedidos()
+    public function ventas()
     {
         $ventas = Venta::with('detalles')->get();
-        return view('admin.pedidos.index', compact('ventas'));
+        return view('admin.ventas.index', compact('ventas'));
     }
 }
