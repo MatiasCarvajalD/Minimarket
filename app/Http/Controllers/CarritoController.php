@@ -94,8 +94,9 @@ class CarritoController extends Controller
     
     public function confirmCheckout(Request $request)
     {
-        // Verificar si el carrito está vacío
+        // Obtener el carrito del usuario
         $carrito = Carrito::where('rut_usuario', auth()->user()->rut_usuario)->get();
+    
         if ($carrito->isEmpty()) {
             return redirect()->route('carrito.index')->with('error', 'El carrito está vacío.');
         }
@@ -103,42 +104,36 @@ class CarritoController extends Controller
         // Validar los datos enviados por el formulario
         $validated = $request->validate([
             'tipo_entrega' => 'required|string|in:delivery,retiro',
-            'direccion_id' => ($request->tipo_entrega === 'delivery' && auth()->user()->rol !== 'invitado') ? 'required|exists:direcciones,id' : 'nullable',
+            'direccion_id' => $request->tipo_entrega === 'delivery' ? 'required|exists:direcciones,id' : 'nullable',
             'metodo_pago' => 'required|string|in:efectivo,tarjeta',
             'nombre' => auth()->user()->rol === 'invitado' ? 'required|string|max:255' : 'nullable',
             'telefono' => auth()->user()->rol === 'invitado' ? 'required|numeric' : 'nullable',
             'correo' => auth()->user()->rol === 'invitado' ? 'required|email' : 'nullable',
-            'direccion' => ($request->tipo_entrega === 'delivery' && auth()->user()->rol === 'invitado') ? 'required|string|max:255' : 'nullable',
         ]);
     
-        // Guardar datos del invitado en la sesión si aplica
-        if (auth()->user()->rol === 'invitado') {
-            session([
-                'guest_data' => [
-                    'direccion' => $validated['direccion'] ?? null,
-                    'nombre' => $validated['nombre'],
-                    'telefono' => $validated['telefono'],
-                    'correo' => $validated['correo'],
-                ],
-            ]);
+        // Verificar el stock de los productos en el carrito
+        foreach ($carrito as $item) {
+            if ($item->cantidad > $item->producto->stock_actual) {
+                return redirect()->route('carrito.index')->with(
+                    'error',
+                    "No hay suficiente stock para el producto {$item->producto->nom_producto}."
+                );
+            }
         }
     
-        // Obtener la dirección para usuarios normales que seleccionaron "delivery"
-        $direccion = null;
-        if ($request->tipo_entrega === 'delivery' && auth()->user()->rol !== 'invitado') {
-            $direccion = Direccion::findOrFail($validated['direccion_id']);
-        }
-    
+        // Resto del código para procesar la venta...
         // Crear la venta
         $venta = Venta::create([
             'rut_usuario' => auth()->user()->rut_usuario,
             'tipo_entrega' => $validated['tipo_entrega'],
             'metodo_pago' => $validated['metodo_pago'],
-            'direccion_entrega' => $direccion ? "{$direccion->calle}, {$direccion->ciudad}, {$direccion->region}" : $validated['direccion'],
+            'direccion_entrega' => $request->tipo_entrega === 'delivery'
+                ? Direccion::find($validated['direccion_id'])->full_address
+                : null,
             'entrega_completada' => false,
         ]);
     
-        // Guardar detalles de la venta
+        // Guardar detalles de la venta y actualizar el stock
         foreach ($carrito as $item) {
             DetalleVenta::create([
                 'id_venta' => $venta->id_venta,
@@ -146,6 +141,9 @@ class CarritoController extends Controller
                 'cantidad' => $item->cantidad,
                 'valor_unidad' => $item->producto->precio,
             ]);
+    
+            // Reducir el stock disponible
+            $item->producto->decrement('stock_actual', $item->cantidad);
         }
     
         // Vaciar el carrito después de la compra
@@ -158,6 +156,7 @@ class CarritoController extends Controller
             return redirect()->route('carrito.confirm')->with('venta_id', $venta->id_venta);
         }
     }
+    
     
     
     
