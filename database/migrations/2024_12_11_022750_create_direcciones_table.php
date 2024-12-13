@@ -11,12 +11,15 @@ class CreateDireccionesTable extends Migration
     {
         Schema::create('direcciones', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('rut_usuario');
-            $table->string('direccion');
+            $table->string('rut_usuario'); 
+            $table->string('calle');
+            $table->string('ciudad');
+            $table->string('region');
             $table->timestamps();
-
+        
             $table->foreign('rut_usuario')->references('rut_usuario')->on('usuarios')->onDelete('cascade');
         });
+        
     }
 
     public function down()

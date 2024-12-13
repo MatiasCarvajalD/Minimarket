@@ -16,14 +16,18 @@ class DireccionesSeeder extends Seeder
     {
         DB::table('direcciones')->insert([
             [
-                'rut_usuario' => 87654321,
-                'direccion' => 'Avenida Siempre Viva 123',
+                'rut_usuario' => '87654321',
+                'calle' => 'Avenida Siempre Viva 123',
+                'ciudad' => 'Coquimbo',
+                'region' => 'IV Coquimbo',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'rut_usuario' => 87654321,
-                'direccion' => 'Calle Falsa 456',
+                'rut_usuario' => '87654321',
+                'calle' => 'Calle Falsa 456',
+                'ciudad' => 'Rancagua',
+                'region' => 'VI Rancagua',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GuestController;
+use App\Http\Controllers\DireccionController;
+
 
 // Rutas públicas para invitados
 Route::prefix('guest')->name('guest.')->group(function () {
@@ -16,5 +18,14 @@ Route::middleware(['auth','role:usuario'])->prefix('user')->name('user.')->group
     Route::get('profile', [UserController::class, 'profile'])->name('profile');
     Route::post('profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
     Route::get('historial-compras', [UserController::class, 'historialCompras'])->name('historial_compras');
-    Route::get('detalle-compra/{id}', [UserController::class, 'detalleCompra'])->name('detalle_compra');
+    Route::get('detalle-compra/{rut_usuario}', [UserController::class, 'detalleCompra'])->name('detalle_compra');
+    Route::get('/direccion/{id}/edit', [DireccionController::class, 'edit'])->name('direccion.edit');
+    Route::put('/direccion/{id}', [DireccionController::class, 'update'])->name('direccion.update');
+    Route::get('/direccion/create', [DireccionController::class, 'create'])->name('direccion.create');
+    Route::post('/direccion/store', [DireccionController::class, 'store'])->name('direccion.store');
+    Route::delete('/direccion/{id}', [DireccionController::class, 'destroy'])->name('direccion.destroy');
+
+
+
+
 });

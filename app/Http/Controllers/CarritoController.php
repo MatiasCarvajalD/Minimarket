@@ -7,6 +7,8 @@ use App\Models\Carrito;
 use App\Models\Producto;
 use App\Models\Venta;
 use App\Models\DetalleVenta;
+use App\Models\Direccion;
+
 
 class CarritoController extends Controller
 {
@@ -65,8 +67,11 @@ class CarritoController extends Controller
             return redirect()->route('carrito.index')->with('error', 'Tu carrito está vacío.');
         }
     
-        return view('carrito.checkout', compact('carrito'));
+        $direcciones = Direccion::where('rut_usuario', auth()->user()->rut_usuario)->get();
+    
+        return view('carrito.checkout', compact('carrito', 'direcciones'));
     }
+    
     
     
     public function confirm()
@@ -89,8 +94,8 @@ class CarritoController extends Controller
     
     public function confirmCheckout(Request $request)
     {
+        // Verificar si el carrito está vacío
         $carrito = Carrito::where('rut_usuario', auth()->user()->rut_usuario)->get();
-    
         if ($carrito->isEmpty()) {
             return redirect()->route('carrito.index')->with('error', 'El carrito está vacío.');
         }
@@ -98,18 +103,19 @@ class CarritoController extends Controller
         // Validar los datos enviados por el formulario
         $validated = $request->validate([
             'tipo_entrega' => 'required|string|in:delivery,retiro',
-            'direccion' => $request->tipo_entrega === 'delivery' ? 'required|string|max:255' : 'nullable',
+            'direccion_id' => ($request->tipo_entrega === 'delivery' && auth()->user()->rol !== 'invitado') ? 'required|exists:direcciones,id' : 'nullable',
             'metodo_pago' => 'required|string|in:efectivo,tarjeta',
             'nombre' => auth()->user()->rol === 'invitado' ? 'required|string|max:255' : 'nullable',
             'telefono' => auth()->user()->rol === 'invitado' ? 'required|numeric' : 'nullable',
             'correo' => auth()->user()->rol === 'invitado' ? 'required|email' : 'nullable',
+            'direccion' => ($request->tipo_entrega === 'delivery' && auth()->user()->rol === 'invitado') ? 'required|string|max:255' : 'nullable',
         ]);
     
-        // Guardar datos del invitado en la sesión
+        // Guardar datos del invitado en la sesión si aplica
         if (auth()->user()->rol === 'invitado') {
             session([
                 'guest_data' => [
-                    'direccion' => $validated['direccion'],
+                    'direccion' => $validated['direccion'] ?? null,
                     'nombre' => $validated['nombre'],
                     'telefono' => $validated['telefono'],
                     'correo' => $validated['correo'],
@@ -117,11 +123,18 @@ class CarritoController extends Controller
             ]);
         }
     
+        // Obtener la dirección para usuarios normales que seleccionaron "delivery"
+        $direccion = null;
+        if ($request->tipo_entrega === 'delivery' && auth()->user()->rol !== 'invitado') {
+            $direccion = Direccion::findOrFail($validated['direccion_id']);
+        }
+    
         // Crear la venta
         $venta = Venta::create([
             'rut_usuario' => auth()->user()->rut_usuario,
             'tipo_entrega' => $validated['tipo_entrega'],
             'metodo_pago' => $validated['metodo_pago'],
+            'direccion_entrega' => $direccion ? "{$direccion->calle}, {$direccion->ciudad}, {$direccion->region}" : $validated['direccion'],
             'entrega_completada' => false,
         ]);
     
@@ -145,6 +158,9 @@ class CarritoController extends Controller
             return redirect()->route('carrito.confirm')->with('venta_id', $venta->id_venta);
         }
     }
+    
+    
+    
 
     public function showConfirm()
     {

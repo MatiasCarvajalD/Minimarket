@@ -10,7 +10,7 @@ class CreateCarritoTable extends Migration
     {
         Schema::create('carrito', function (Blueprint $table) {
             $table->id('id_carrito');
-            $table->unsignedBigInteger('rut_usuario'); // Clave foránea hacia usuarios
+            $table->string('rut_usuario'); // Clave foránea hacia usuarios
             $table->unsignedBigInteger('cod_producto'); // Clave foránea hacia productos
             $table->integer('cantidad');
             $table->timestamps();

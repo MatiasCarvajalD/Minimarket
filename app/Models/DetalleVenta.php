@@ -32,4 +32,5 @@ class DetalleVenta extends Model
     {
         return $this->cantidad * $this->valor_unidad;
     }
+    
 }

@@ -13,7 +13,7 @@
         @forelse ($categoria->productos as $producto)
             <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                 <div class="card h-100 shadow-sm">
-                    <img src="{{ asset('storage/' . $producto->imagen ?? 'default.png') }}" class="card-img-top" alt="{{ $producto->nom_producto }}" style="height: 200px; object-fit: cover;">
+                    <img src="{{ asset('storage/' . $producto->imagen) }}" alt="{{ $producto->nom_producto }}" style="height: 200px; object-fit: cover;">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">{{ $producto->nom_producto }}</h5>
                         <p class="card-text text-muted mb-1">{{ Str::limit($producto->descripcion, 50) }}</p>

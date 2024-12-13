@@ -11,7 +11,10 @@ class Direccion extends Model
     protected $table = 'direcciones';
 
     protected $fillable = [
-        'rut_usuario', 'direccion'
+        'rut_usuario',        
+        'calle',
+        'ciudad',
+        'region',
     ];
 
     // Relación inversa con usuarios
@@ -19,4 +22,9 @@ class Direccion extends Model
     {
         return $this->belongsTo(Usuario::class, 'rut_usuario', 'rut_usuario');
     }
+    public function direcciones()
+{
+    return $this->hasMany(Direccion::class, 'rut_usuario', 'rut_usuario');
+}
+
 }

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Venta;
+use App\Models\Direccion;
+
 
 class UserController extends Controller
 {
@@ -26,7 +28,9 @@ class UserController extends Controller
     public function profile()
     {
         $user = auth()->user();
-        return view('Usuario.configuracion', compact('user'));
+        $direcciones = Direccion::where('rut_usuario', $user->rut_usuario)->get();
+
+        return view('Usuario.configuracion', compact('user','direcciones'));
     }
 
     public function updateProfile(Request $request)
@@ -43,6 +47,13 @@ class UserController extends Controller
         
     
         $user->forceFill($validated)->save();
+
+        if ($request->filled('direccion')) {
+            Direccion::updateOrCreate(
+                ['rut_usuario' => $user->rut_usuario], // Busca por el RUT
+                ['calle' => $request->direccion] // Actualiza el campo 'calle'
+            );
+        }
 
     
         return redirect()->route('user.profile')->with('success', 'Perfil actualizado correctamente.');

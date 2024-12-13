@@ -1,83 +1,95 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="container py-4">
-    <h1 class="mb-4">Checkout</h1>
+@section('title', 'Finalizar Compra')
 
-    @if ($carrito->isEmpty())
-        <div class="alert alert-warning" role="alert">
-            Tu carrito está vacío. Agrega productos para continuar.
-        </div>
-    @else
-        <!-- Resumen del carrito -->
-        <table class="table table-bordered">
-            <thead class="table-primary">
-                <tr>
-                    <th>Producto</th>
-                    <th>Cantidad</th>
-                    <th>Precio</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($carrito as $item)
+@section('content')
+<div class="container">
+    <h1>Finalizar Compra</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($carrito as $item)
                 <tr>
                     <td>{{ $item->producto->nom_producto }}</td>
                     <td>{{ $item->cantidad }}</td>
                     <td>${{ number_format($item->producto->precio, 0, ',', '.') }}</td>
-                    <td>${{ number_format($item->cantidad * $item->producto->precio, 0, ',', '.') }}</td>
+                    <td>${{ number_format($item->producto->precio * $item->cantidad, 0, ',', '.') }}</td>
                 </tr>
-                @endforeach
-            </tbody>
-        </table>
+            @endforeach
+        </tbody>
+    </table>
 
-        <form method="POST" action="{{ route('carrito.confirmCheckout') }}">
-            @csrf
-    
-            <!-- Método de entrega -->
-            <div class="form-group">
-                <label for="tipo_entrega">Método de entrega</label>
-                <select id="tipo_entrega" name="tipo_entrega" class="form-control" onchange="toggleAddressField(this.value)" required>
-                    <option value="retiro">Retiro en tienda</option>
-                    <option value="delivery">Delivery</option>
-                </select>
-            </div>
-    
-            <!-- Dirección solo para invitados -->
-            @if(auth()->user()->rol === 'invitado')
-            <div id="direccion_field" style="display: none;">
-                <label for="direccion" class="form-label">Dirección</label>
-                <input type="text" id="direccion" name="direccion" class="form-control" placeholder="Ingresa tu dirección">
-            </div>
+    <form action="{{ route('carrito.confirmCheckout') }}" method="POST">
+        @csrf
+        <!-- Para todos los usuarios (incluye tipo de entrega y dirección) -->
+        <h2>Tipo de Entrega</h2>
+        <div class="mb-3">
+            <select name="tipo_entrega" class="form-select" required onchange="toggleDireccion(this)">
+                <option value="retiro">Retiro en Tienda</option>
+                <option value="delivery">Delivery</option>
+            </select>
+        </div>
+
+        <div class="mb-3" id="direccion-container" style="display: none;">
+            <label for="direccion" class="form-label">Dirección</label>
+            @if (auth()->user()->rol === 'invitado')
+                <input type="text" name="direccion" class="form-control">
             @else
-            <div id="direccion_field" class="mt-3">
-                <label for="direccion" class="form-label">Dirección</label>
-                <div class="alert alert-info p-2" role="alert">
-                    <strong>{{ auth()->user()->direccion }}</strong>
-                </div>
-                <input type="hidden" id="direccion" name="direccion" value="{{ auth()->user()->direccion }}">
-            </div>
-            @endif
-
-
-            <!-- Método de pago -->
-            <div class="form-group">
-                <label for="metodo_pago">Método de pago</label>
-                <select id="metodo_pago" name="metodo_pago" class="form-control" required>
-                    <option value="efectivo">Efectivo</option>
-                    <option value="tarjeta">Tarjeta</option>
+                <select name="direccion_id" class="form-select">
+                    @foreach ($direcciones as $direccion)
+                        <option value="{{ $direccion->id }}">
+                            {{ $direccion->calle }}, {{ $direccion->ciudad }}, {{ $direccion->region }}
+                        </option>
+                    @endforeach
                 </select>
+            @endif
+        </div>
+
+        <!-- Sección específica para invitados -->
+        @if (auth()->user()->rol === 'invitado')
+            <h2>Información del Invitado</h2>
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" name="nombre" class="form-control" required>
             </div>
-    
-            <button type="submit" class="btn btn-primary">Finalizar Compra</button>
-        </form>
-    @endif 
+            <div class="mb-3">
+                <label for="correo" class="form-label">Correo Electrónico</label>
+                <input type="email" name="correo" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="telefono" class="form-label">Teléfono</label>
+                <input type="text" name="telefono" class="form-control" required>
+            </div>
+        @endif
+
+        <!-- Método de pago -->
+        <h2>Método de Pago</h2>
+        <div class="mb-3">
+            <select name="metodo_pago" class="form-select" required>
+                <option value="efectivo">Efectivo</option>
+                <option value="tarjeta">Tarjeta</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Proceder al Pago</button>
+    </form>
 </div>
 
 <script>
-    function toggleAddressField(tipoEntrega) {
-        const addressField = document.getElementById('direccion_field');
-        addressField.style.display = (tipoEntrega === 'delivery') ? 'block' : 'none';
+    function toggleDireccion(select) {
+        const direccionContainer = document.getElementById('direccion-container');
+        if (select.value === 'delivery') {
+            direccionContainer.style.display = 'block';
+        } else {
+            direccionContainer.style.display = 'none';
+        }
     }
 </script>
 @endsection
