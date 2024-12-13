@@ -21,17 +21,28 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
     
         if (Auth::attempt($credentials)) {
-            // Redirigir según el rol del usuario
+            // Obtener el usuario autenticado
             $user = Auth::user();
-            if ($user->rol === 'invitado') {
-                return redirect()->route('guest.home');
-            } else {
-                return redirect()->route('user.home');
+    
+            // Redirigir según el rol del usuario
+            switch ($user->rol) {
+                case 'admin':
+                    return redirect()->route('admin.dashboard'); // Ruta para el dashboard del admin
+                case 'usuario':
+                    return redirect()->route('user.home'); // Ruta para el usuario regular
+                case 'invitado':
+                    return redirect()->route('guest.home'); // Ruta para el invitado
+                default:
+                    // En caso de un rol desconocido
+                    Auth::logout();
+                    return redirect()->route('login')->withErrors(['email' => 'Rol de usuario no válido']);
             }
         }
     
+        // Si las credenciales son incorrectas
         return redirect()->route('login')->withErrors(['email' => 'Credenciales incorrectas']);
     }
+    
 
     public function loginAsGuest()
     {

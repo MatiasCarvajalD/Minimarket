@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Dashboard Admin')
 
@@ -18,7 +18,7 @@
         <div class="card text-white bg-success mb-3">
             <div class="card-header">Ventas</div>
             <div class="card-body">
-                <h5 class="card-title">${{ number_format($totalVentas ?? 0, 0, ',', '.') }}</h5>
+                <h5 class="card-title">${{ number_format($ingresosTotales, 2) }}</h5>
                 <p class="card-text">Ingresos totales.</p>
             </div>
         </div>

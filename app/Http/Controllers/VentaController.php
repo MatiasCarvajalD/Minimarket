@@ -9,7 +9,7 @@ class VentaController extends Controller
 {
     public function index()
     {
-        $ventas = Venta::paginate(10);
+        $ventas = Venta::with('detalles')->get(); // Ajusta según tu relación con 'detalles'
         return view('admin.ventas.index', compact('ventas'));
     }
 

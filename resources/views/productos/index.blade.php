@@ -1,6 +1,18 @@
 @extends('layouts.app')
 
 @section('title', 'Catálogo Minimarket')
+@if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
 
 @section('content')
 <div class="container py-4">
@@ -18,10 +30,12 @@
                         <h5 class="card-title">{{ $producto->nom_producto }}</h5>
                         <p class="card-text text-muted mb-1">{{ Str::limit($producto->descripcion, 50) }}</p>
                         <p class="card-text fw-bold mb-3">$ {{ number_format($producto->precio, 0, ',', '.') }}</p>
-                        <form action="{{ route('carrito.add', $producto->cod_producto) }}" method="POST" class="mt-auto">
+                        <form action="{{ route('carrito.add', $producto->cod_producto) }}" method="POST">
                             @csrf
                             <button type="submit" class="btn btn-primary w-100">Agregar al Carrito</button>
                         </form>
+                        
+                        
                     </div>
                 </div>
             </div>

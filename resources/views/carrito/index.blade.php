@@ -1,19 +1,37 @@
 @extends('layouts.app')
 
+@section('title', 'Carrito de Compras')
+
 @section('content')
-<div class="container py-4">
-    <h1>Tu Carrito</h1>
+<div class="container">
+    <h1>Carrito de Compras</h1>
+
+    <!-- Mensajes de éxito o error -->
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
 
     @if ($carrito->isEmpty())
-        <div class="alert alert-warning">Tu carrito está vacío.</div>
+        <div class="alert alert-info">
+            Tu carrito está vacío. <a href="{{ route('minimarket.index') }}">Explora productos aquí</a>.
+        </div>
     @else
-        <table class="table table-bordered">
+        <table class="table">
             <thead>
                 <tr>
                     <th>Producto</th>
                     <th>Cantidad</th>
                     <th>Precio Unitario</th>
                     <th>Subtotal</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -25,17 +43,38 @@
                     @endphp
                     <tr>
                         <td>{{ $item->producto->nom_producto }}</td>
-                        <td>{{ $item->cantidad }}</td>
+                        <td>
+                            <form action="{{ route('carrito.updateQuantity', $item->id_carrito) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <input type="number" name="cantidad" value="{{ $item->cantidad }}" min="1" max="{{ $item->producto->stock_actual }}" class="form-control form-control-sm" style="width: 80px; display: inline-block;">
+                                <button type="submit" class="btn btn-sm btn-primary">Actualizar</button>
+                            </form>
+                        </td>
+                        
                         <td>${{ number_format($item->producto->precio, 0, ',', '.') }}</td>
                         <td>${{ number_format($subtotal, 0, ',', '.') }}</td>
+                        <td>
+                            <form action="{{ route('carrito.remove', $item->id_carrito) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                            </form>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end fw-bold">Total:</td>
+                    <td colspan="2">${{ number_format($total, 0, ',', '.') }}</td>
+                </tr>
+            </tfoot>
         </table>
-        <h3 class="text-end">Total: ${{ number_format($total, 0, ',', '.') }}</h3>
 
-        <a href="{{ route('carrito.checkout') }}" class="btn btn-primary">Proceder al Checkout</a>
-
+        <div class="text-end">
+            <a href="{{ route('carrito.checkout') }}" class="btn btn-success">Finalizar Compra</a>
+        </div>
     @endif
 </div>
 @endsection

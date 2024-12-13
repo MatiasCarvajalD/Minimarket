@@ -28,17 +28,39 @@ class CarritoController extends Controller
 
     public function add($cod_producto)
     {
+        // Buscar el producto
         $producto = Producto::findOrFail($cod_producto);
-
-        Carrito::updateOrCreate(
-            ['rut_usuario' => auth()->user()->rut_usuario, 'cod_producto' => $producto->cod_producto],
-            ['cantidad' => \DB::raw('cantidad + 1')]
-        );
-
+    
+        // Verificar si hay stock disponible
+        if ($producto->stock_actual <= 0) {
+            return redirect()->route('carrito.index')->with('error', 'No hay suficiente stock para este producto.');
+        }
+    
+        // Obtener el rut del usuario actual (invitado o registrado)
+        $rut_usuario = auth()->user()->rut_usuario;
+    
+        // Verificar si el producto ya está en el carrito
+        $carritoItem = Carrito::where('rut_usuario', $rut_usuario)
+            ->where('cod_producto', $producto->cod_producto)
+            ->first();
+    
+        if ($carritoItem) {
+            // El producto ya está en el carrito, no hacemos nada
+            return redirect()->route('carrito.index')->with('success', 'El producto ya está en tu carrito.');
+        }
+    
+        // Agregar el producto al carrito con cantidad inicial 1
+        Carrito::create([
+            'rut_usuario' => $rut_usuario,
+            'cod_producto' => $producto->cod_producto,
+            'cantidad' => 1,
+        ]);
+    
         return redirect()->route('carrito.index')->with('success', 'Producto agregado al carrito.');
     }
     
-
+    
+    
     // Elimina un producto del carrito
     public function remove($id_carrito)
     {
@@ -48,15 +70,30 @@ class CarritoController extends Controller
         return redirect()->route('carrito.index')->with('success', 'Producto eliminado del carrito.');
     }
 
+
     public function updateQuantity(Request $request, $id_carrito)
     {
-        $validated = $request->validate(['cantidad' => 'required|integer|min:1']);
-
+        // Validar la cantidad ingresada
+        $validated = $request->validate([
+            'cantidad' => 'required|integer|min:1',
+        ]);
+    
+        // Obtener el elemento del carrito
         $carritoItem = Carrito::findOrFail($id_carrito);
+    
+        // Verificar que la cantidad solicitada no exceda el stock disponible
+        if ($validated['cantidad'] > $carritoItem->producto->stock_actual) {
+            return redirect()->route('carrito.index')->with('error', 'No hay suficiente stock disponible.');
+        }
+    
+        // Actualizar la cantidad en el carrito
         $carritoItem->update(['cantidad' => $validated['cantidad']]);
-
-        return redirect()->route('carrito.index')->with('success', 'Cantidad actualizada.');
+    
+        return redirect()->route('carrito.index')->with('success', 'Cantidad actualizada correctamente.');
     }
+    
+
+    
 
     // Muestra el formulario de checkout
     public function checkout()
@@ -104,7 +141,12 @@ class CarritoController extends Controller
         // Validar los datos enviados por el formulario
         $validated = $request->validate([
             'tipo_entrega' => 'required|string|in:delivery,retiro',
-            'direccion_id' => $request->tipo_entrega === 'delivery' ? 'required|exists:direcciones,id' : 'nullable',
+            'direccion' => $request->tipo_entrega === 'delivery' && auth()->user()->rol === 'invitado' 
+                ? 'required|string|max:255' 
+                : 'nullable',
+            'direccion_id' => $request->tipo_entrega === 'delivery' && auth()->user()->rol !== 'invitado' 
+                ? 'required|exists:direcciones,id' 
+                : 'nullable',
             'metodo_pago' => 'required|string|in:efectivo,tarjeta',
             'nombre' => auth()->user()->rol === 'invitado' ? 'required|string|max:255' : 'nullable',
             'telefono' => auth()->user()->rol === 'invitado' ? 'required|numeric' : 'nullable',
@@ -121,14 +163,15 @@ class CarritoController extends Controller
             }
         }
     
-        // Resto del código para procesar la venta...
         // Crear la venta
         $venta = Venta::create([
             'rut_usuario' => auth()->user()->rut_usuario,
             'tipo_entrega' => $validated['tipo_entrega'],
             'metodo_pago' => $validated['metodo_pago'],
-            'direccion_entrega' => $request->tipo_entrega === 'delivery'
-                ? Direccion::find($validated['direccion_id'])->full_address
+            'direccion_entrega' => $validated['tipo_entrega'] === 'delivery' 
+                ? (auth()->user()->rol === 'invitado' 
+                    ? $validated['direccion'] 
+                    : Direccion::find($validated['direccion_id'])->full_address) 
                 : null,
             'entrega_completada' => false,
         ]);
@@ -149,18 +192,24 @@ class CarritoController extends Controller
         // Vaciar el carrito después de la compra
         Carrito::where('rut_usuario', auth()->user()->rut_usuario)->delete();
     
-        // Redirigir según el tipo de usuario
+        // Guardar datos de invitados en la sesión, si aplica
         if (auth()->user()->rol === 'invitado') {
+            session([
+                'guest_data' => [
+                    'nombre' => $validated['nombre'],
+                    'telefono' => $validated['telefono'],
+                    'correo' => $validated['correo'],
+                    'direccion' => $validated['direccion'] ?? null,
+                ],
+            ]);
+    
             return redirect()->route('guest.confirmacion')->with('venta_id', $venta->id_venta);
-        } else {
-            return redirect()->route('carrito.confirm')->with('venta_id', $venta->id_venta);
         }
+    
+        return redirect()->route('carrito.confirm')->with('venta_id', $venta->id_venta);
     }
     
     
-    
-    
-
     public function showConfirm()
     {
         // Obtener la última venta del usuario autenticado
@@ -175,6 +224,4 @@ class CarritoController extends Controller
 
         return view('carrito.confirm', compact('venta'));
     }
-
-
 }

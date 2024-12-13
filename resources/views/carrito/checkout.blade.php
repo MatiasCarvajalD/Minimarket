@@ -25,10 +25,11 @@
             @endforeach
         </tbody>
     </table>
-
+    
     <form action="{{ route('carrito.confirmCheckout') }}" method="POST">
         @csrf
-        <!-- Para todos los usuarios (incluye tipo de entrega y dirección) -->
+        
+        <!-- Tipo de Entrega -->
         <h2>Tipo de Entrega</h2>
         <div class="mb-3">
             <select name="tipo_entrega" class="form-select" required onchange="toggleDireccion(this)">
@@ -37,10 +38,11 @@
             </select>
         </div>
 
+        <!-- Dirección -->
         <div class="mb-3" id="direccion-container" style="display: none;">
             <label for="direccion" class="form-label">Dirección</label>
             @if (auth()->user()->rol === 'invitado')
-                <input type="text" name="direccion" class="form-control">
+                <input type="text" name="direccion" class="form-control" placeholder="Ingrese su dirección">
             @else
                 <select name="direccion_id" class="form-select">
                     @foreach ($direcciones as $direccion)
@@ -52,7 +54,7 @@
             @endif
         </div>
 
-        <!-- Sección específica para invitados -->
+        <!-- Información para Invitados -->
         @if (auth()->user()->rol === 'invitado')
             <h2>Información del Invitado</h2>
             <div class="mb-3">
@@ -69,7 +71,7 @@
             </div>
         @endif
 
-        <!-- Método de pago -->
+        <!-- Método de Pago -->
         <h2>Método de Pago</h2>
         <div class="mb-3">
             <select name="metodo_pago" class="form-select" required>
@@ -78,18 +80,16 @@
             </select>
         </div>
 
+        <!-- Botón de Envío -->
         <button type="submit" class="btn btn-success">Proceder al Pago</button>
     </form>
 </div>
 
 <script>
+    // Mostrar u ocultar el contenedor de dirección según el tipo de entrega
     function toggleDireccion(select) {
         const direccionContainer = document.getElementById('direccion-container');
-        if (select.value === 'delivery') {
-            direccionContainer.style.display = 'block';
-        } else {
-            direccionContainer.style.display = 'none';
-        }
+        direccionContainer.style.display = (select.value === 'delivery') ? 'block' : 'none';
     }
 </script>
 @endsection

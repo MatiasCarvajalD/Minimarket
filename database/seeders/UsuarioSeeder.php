@@ -31,7 +31,7 @@ class UsuarioSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'rut_usuario' => 0,
+                'rut_usuario' => 99999999,
                 'password' => bcrypt('invitado'),
                 'nombre_usuario' => 'Invitado',
                 'telefono' => null,
