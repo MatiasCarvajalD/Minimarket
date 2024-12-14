@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
-
+Route::get('/', function () {
+    return redirect()->route('login');
+});
 // Cargar rutas separadas
 require base_path('routes/auth.php');        // Rutas de autenticación
 require base_path('routes/admin.php');       // Rutas de administración
