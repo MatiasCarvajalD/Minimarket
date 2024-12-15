@@ -20,7 +20,9 @@ class Producto extends Model
         'stock_actual',
         'stock_critico',
         'id_categoria',
+        'imagen',
     ];
+    
 
     public function categoria()
     {

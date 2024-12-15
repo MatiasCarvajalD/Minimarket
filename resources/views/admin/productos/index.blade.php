@@ -18,8 +18,15 @@
                 </tr>
             </thead>
             <tbody>
+                    <!-- Mensaje de éxito -->
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
                 @forelse($productos as $producto)
                     <tr>
+                        
                         <td>{{ $producto->cod_producto }}</td>
                         <td>{{ $producto->nom_producto }}</td>
                         <td>{{ $producto->descripcion }}</td>

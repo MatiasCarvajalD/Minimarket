@@ -13,6 +13,8 @@ class User extends Authenticatable
     protected $primaryKey = 'rut_usuario';
     public $incrementing = false;
     protected $keyType = 'string';
+    public $timestamps = true;
+
 
     protected $fillable = [
         'rut_usuario',

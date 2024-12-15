@@ -10,7 +10,7 @@ class CreateUsuariosTable extends Migration
     public function up()
     {
         Schema::create('usuarios', function (Blueprint $table) {
-            $table->string('rut_usuario')->primary();
+            $table->string('rut_usuario', 10)->primary();
             $table->string('password', 255);
             $table->string('nombre_usuario', 30);
             $table->bigInteger('telefono')->nullable();

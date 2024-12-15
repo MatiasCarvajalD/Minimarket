@@ -36,7 +36,12 @@ class DireccionController extends Controller
             'calle' => 'required|string|max:255',
             'ciudad' => 'required|string|max:255',
             'region' => 'required|string|max:255',
+        ], [
+            'calle.required' => 'La calle es obligatoria.',
+            'ciudad.required' => 'La ciudad es obligatoria.',
+            'region.required' => 'La región es obligatoria.',
         ]);
+        
 
         Direccion::create([
             'rut_usuario' => auth()->user()->rut_usuario,

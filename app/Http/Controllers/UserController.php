@@ -36,28 +36,21 @@ class UserController extends Controller
     public function updateProfile(Request $request)
     {
         $user = auth()->user();
-
     
+        // Validación de los datos del usuario
         $validated = $request->validate([
             'nombre_usuario' => 'required|string|max:255',
             'email' => 'required|email|unique:usuarios,email,' . $user->rut_usuario . ',rut_usuario',
             'telefono' => 'nullable|string|max:15',
-            'direccion' => 'nullable|string|max:255',
         ]);
-        
     
+        // Actualización del usuario
         $user->forceFill($validated)->save();
-
-        if ($request->filled('direccion')) {
-            Direccion::updateOrCreate(
-                ['rut_usuario' => $user->rut_usuario], // Busca por el RUT
-                ['calle' => $request->direccion] // Actualiza el campo 'calle'
-            );
-        }
-
     
+        // Redirección con mensaje de éxito
         return redirect()->route('user.profile')->with('success', 'Perfil actualizado correctamente.');
     }
+    
 
     public function historialCompras()
     {

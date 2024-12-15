@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -73,24 +74,37 @@ class AuthController extends Controller
     {
         return view('auth.register');
     }
-
-    // Procesa el registro de un nuevo usuario
+ 
     public function register(Request $request)
     {
-        $validated = $request->validate([
+
+        // Validar los datos de entrada
+        $request->validate([
+            'rut_usuario' => [
+                'required',
+                'string',
+                'regex:/^\d{7,8}$/', // Solo 7-8 dígitos, sin guion ni dígito verificador
+                'unique:usuarios,rut_usuario',
+            ],
             'nombre_usuario' => 'required|string|max:255',
-            'email' => 'required|email|unique:usuarios,email',
-            'password' => 'required|string|min:8|confirmed',
+            'email' => 'required|email|max:255|unique:usuarios,email',
+            'password' => 'required|confirmed|min:8',
         ]);
 
-        User::create([
-            'nombre_usuario' => $validated['nombre_usuario'],
-            'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
-            'rol' => 'usuario',
-        ]);
 
-        return redirect()->route('login')->with('success', 'Registro exitoso.');
+        
+    
+        // Crear el nuevo usuario en la base de datos
+        $usuario = User::create([
+            'rut_usuario' => $request->rut_usuario,
+            'nombre_usuario' => $request->nombre_usuario,
+            'email' => $request->email,
+            'password' => Hash::make($request->password), // Encripta la contraseña
+            'rol' => 'usuario', // Valor por defecto
+        ]);
+    
+        // Redirigir al login con un mensaje de éxito
+        return redirect()->route('login')->with('success', 'Usuario registrado exitosamente.');
     }
     
     protected function redirectTo()

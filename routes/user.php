@@ -16,7 +16,7 @@ Route::prefix('guest')->name('guest.')->group(function () {
 Route::middleware(['auth','role:usuario'])->prefix('user')->name('user.')->group(function () {
     Route::get('home', [UserController::class, 'home'])->name('home');
     Route::get('profile', [UserController::class, 'profile'])->name('profile');
-    Route::post('profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
+    Route::put('profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
     Route::get('historial-compras', [UserController::class, 'historialCompras'])->name('historial_compras');
     Route::get('detalle-compra/{rut_usuario}', [UserController::class, 'detalleCompra'])->name('detalle_compra');
     Route::get('/direccion/{id}/edit', [DireccionController::class, 'edit'])->name('direccion.edit');

@@ -3,8 +3,18 @@
 @section('content')
     <div class="container">
         <h1>Agregar Producto</h1>
-        <form action="{{ route('admin.productos.store') }}" method="POST">
+        <form action="{{ route('admin.productos.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="mb-3">
                 <label for="nom_producto" class="form-label">Nombre</label>
                 <input type="text" name="nom_producto" class="form-control" required>
@@ -26,6 +36,10 @@
                 <input type="number" name="stock_actual" class="form-control" required>
             </div>
             <div class="mb-3">
+                <label for="stock_critico" class="form-label">Stock Crítico</label>
+                <input type="number" name="stock_critico" class="form-control" required>
+            </div>            
+            <div class="mb-3">
                 <label for="id_categoria" class="form-label">Categoría</label>
                 <select name="id_categoria" class="form-select" required>
                     @foreach($categorias as $categoria)
@@ -33,6 +47,10 @@
                     @endforeach
                 </select>
             </div>
+            <div class="mb-3">
+                <label for="imagen" class="form-label">Imagen del Producto</label>
+                <input type="file" name="imagen" class="form-control" accept="image/*">
+            </div>            
             <button type="submit" class="btn btn-success">Guardar</button>
             <a href="{{ route('admin.productos.index') }}" class="btn btn-secondary">Cancelar</a>
         </form>
