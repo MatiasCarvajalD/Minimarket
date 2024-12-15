@@ -38,8 +38,6 @@ class User extends Authenticatable
     {
         return $this->carrito()->get();
     }
-
-    // Método para obtener ventas recientes
     public function recentVentas()
     {
         return $this->ventas()->orderBy('fecha', 'desc')->limit(5)->get();
