@@ -11,7 +11,7 @@
         <!-- Acceso a Minimarket -->
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm">
-                <img src="{{ asset('images/minimarket.jpg') }}" class="card-img-top" alt="Minimarket"style="height: 300px; object-fit: cover;">
+                <img src="{{ asset('storage/images/minimarket.jpg') }}" class="card-img-top" alt="Minimarket"style="height: 300px; object-fit: cover;">
                 <div class="card-body text-center">
                     <h5 class="card-title">Minimarket</h5>
                     <p class="card-text">Explora nuestros productos básicos disponibles en el minimarket.</p>
@@ -23,7 +23,7 @@
         <!-- Acceso a Restaurant -->
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm">
-                <img src="{{ asset('images/restaurant.jpg') }}" class="card-img-top" alt="Restaurant"style="height: 300px; object-fit: cover;">
+                <img src="{{ asset('storage/images/restaurant.jpg') }}" class="card-img-top" alt="Restaurant"style="height: 300px; object-fit: cover;">
                 <div class="card-body text-center">
                     <h5 class="card-title">Restaurant</h5>
                     <p class="card-text">Descubre nuestra comida casera chilena y disfruta de deliciosos platillos.</p>

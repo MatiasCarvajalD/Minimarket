@@ -48,8 +48,8 @@
                 </select>
             </div>
             <div class="mb-3">
-                <label for="imagen" class="form-label">Imagen del Producto</label>
-                <input type="file" name="imagen" class="form-control" accept="image/*">
+                <input type="text" name="nom_producto" placeholder="Imagen Del Producto" required>
+                <input type="file" name="imagen" accept="image/*" required>
             </div>            
             <button type="submit" class="btn btn-success">Guardar</button>
             <a href="{{ route('admin.productos.index') }}" class="btn btn-secondary">Cancelar</a>
