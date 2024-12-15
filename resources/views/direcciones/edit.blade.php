@@ -3,6 +3,8 @@
 @section('content')
 <div class="container">
     <h1>Editar Dirección</h1>
+    
+    <!-- Formulario para editar la dirección -->
     <form action="{{ route('user.direccion.update', $direccion->id) }}" method="POST">
         @csrf
         @method('PUT')
@@ -19,12 +21,13 @@
             <input type="text" name="region" class="form-control" value="{{ $direccion->region }}" required>
         </div>
         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-        <form action="{{ route('user.direccion.destroy', $direccion->id) }}" method="POST" style="display: inline-block;">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta dirección?')">Eliminar Dirección</button>
-        </form>
-        
+    </form>
+
+    <!-- Formulario para eliminar la dirección -->
+    <form action="{{ route('user.direccion.destroy', $direccion->id) }}" method="POST" style="display: inline-block; margin-top: 15px;">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta dirección?')">Eliminar Dirección</button>
     </form>
 </div>
 @endsection

@@ -25,7 +25,4 @@ Route::middleware(['auth','role:usuario'])->prefix('user')->name('user.')->group
     Route::post('/direccion/store', [DireccionController::class, 'store'])->name('direccion.store');
     Route::delete('/direccion/{id}', [DireccionController::class, 'destroy'])->name('direccion.destroy');
 
-
-
-
 });

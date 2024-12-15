@@ -72,7 +72,7 @@ class AdminController extends Controller
         // Validar los datos
         $validated = $request->validate([
             'nombre_usuario' => 'required|string|max:255',
-            'email' => 'required|email|unique:usuarios,email,' . $usuario->id . ',id',
+            'email' => 'required|email|unique:usuarios,email,' . $usuario->rut_usuario . ',rut_usuario',
             'rol' => 'required|string|in:usuario,admin',
         ]);
     
