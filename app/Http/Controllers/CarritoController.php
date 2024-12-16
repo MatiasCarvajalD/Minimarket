@@ -8,6 +8,9 @@ use App\Models\Producto;
 use App\Models\Venta;
 use App\Models\DetalleVenta;
 use App\Models\Direccion;
+use App\Models\DetallesCheckout;
+
+
 
 
 class CarritoController extends Controller
@@ -149,10 +152,10 @@ class CarritoController extends Controller
                 : 'nullable',
             'metodo_pago' => 'required|string|in:efectivo,tarjeta',
             'nombre' => auth()->user()->rol === 'invitado' ? 'required|string|max:255' : 'nullable',
-            'telefono' => auth()->user()->rol === 'invitado' ? 'required|numeric' : 'nullable',
             'correo' => auth()->user()->rol === 'invitado' ? 'required|email' : 'nullable',
+            'telefono' => auth()->user()->rol === 'invitado' ? 'required|numeric' : 'nullable',
         ]);
-    
+
         // Verificar el stock de los productos en el carrito
         foreach ($carrito as $item) {
             if ($item->cantidad > $item->producto->stock_actual) {
@@ -166,15 +169,29 @@ class CarritoController extends Controller
         // Crear la venta
         $venta = Venta::create([
             'rut_usuario' => auth()->user()->rut_usuario,
-            'tipo_entrega' => $validated['tipo_entrega'],
+            'tipo_entrega' => $validated['tipo_entrega'], // Se asegura de guardar delivery o retiro
             'metodo_pago' => $validated['metodo_pago'],
-            'direccion_entrega' => $validated['tipo_entrega'] === 'delivery' 
-                ? (auth()->user()->rol === 'invitado' 
-                    ? $validated['direccion'] 
-                    : Direccion::find($validated['direccion_id'])->full_address) 
-                : null,
             'entrega_completada' => false,
         ]);
+
+    
+        // Guardar la dirección en `detalles_checkout`
+        $direccion = $validated['tipo_entrega'] === 'delivery' 
+            ? (auth()->user()->rol === 'invitado' 
+                ? $validated['direccion'] // Dirección manual ingresada por invitado
+                : Direccion::find($validated['direccion_id'])->full_address) // Dirección seleccionada por usuario registrado
+            : null;
+        
+
+
+        \App\Models\DetallesCheckout::create([
+            'id_venta' => $venta->id_venta,
+            'direccion' => $direccion, // Aquí debe estar la dirección
+            'metodo_pago' => $validated['metodo_pago'],
+            
+        ]);
+
+
     
         // Guardar detalles de la venta y actualizar el stock
         foreach ($carrito as $item) {
@@ -210,6 +227,8 @@ class CarritoController extends Controller
     }
     
     
+    
+    
     public function showConfirm()
     {
         // Obtener la última venta del usuario autenticado
@@ -224,4 +243,10 @@ class CarritoController extends Controller
 
         return view('carrito.confirm', compact('venta'));
     }
+
+    public function detallesCheckout()
+    {
+        return $this->hasOne(\App\Models\DetallesCheckout::class, 'id_venta');
+    }
+
 }

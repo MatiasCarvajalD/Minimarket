@@ -1,27 +1,44 @@
+<!-- Header de Admin -->
+<header class="header-admin">
+    <div class="container">
+        <h1 class="text-center">Panel de Administración</h1>
+    </div>
+</header>
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="{{ route('admin.dashboard') }}">Admin</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.usuarios.index') }}">Usuarios</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.productos.index') }}">Productos</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.ventas.index') }}">Ventas</a>
-            </li>
-            <li>
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-link">Cerrar sesión</button>
-                </form>
-                
-            </li>
-            
-        </ul>
+    <div class="container">
+        <a class="navbar-brand" href="/admin/dashboard">Admin</a>
+        
+        <!-- Botón para dispositivos pequeños -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAdmin" aria-controls="navbarAdmin" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <!-- Contenido del menú -->
+        <div class="collapse navbar-collapse" id="navbarAdmin">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/admin/usuarios">Usuarios</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/productos">Productos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/ventas">Ventas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/proveedores">Proveedores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/compras">Compras</a>
+                </li>
+            </ul>
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-link">Cerrar sesión</button>
+            </form>
+        </div>
     </div>
 </nav>
+
+                

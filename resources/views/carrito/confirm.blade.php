@@ -7,21 +7,25 @@
 
     <h3>Datos del Pedido</h3>
     <ul>
-        <li><strong>Método de entrega:</strong> {{ $venta->tipo_entrega }}</li>
-        @if ($venta->tipo_entrega === 'delivery')
-            <li><strong>Dirección:</strong> {{ auth()->user()->direccion }}</li>
+        <li><strong>Método de entrega:</strong> 
+            {{ $venta->tipo_entrega === 'delivery' ? 'Delivery' : 'Retiro en tienda' }}
+        </li>
+        @if($venta->tipo_entrega === 'delivery')
+            <li><strong>Dirección de entrega:</strong> {{ $venta->detallesCheckout->direccion ?? 'No especificada' }}</li>
         @endif
         <li><strong>Método de pago:</strong> {{ ucfirst($venta->metodo_pago) }}</li>
         <li><strong>Estado de entrega:</strong> {{ $venta->entrega_completada ? 'Completada' : 'Pendiente' }}</li>
     </ul>
+
     <h3>Datos del Comprador</h3>
     <ul>
         <li><strong>Nombre:</strong> {{ auth()->user()->nombre_usuario }}</li>
         <li><strong>Teléfono:</strong> {{ auth()->user()->telefono }}</li>
         <li><strong>Correo:</strong> {{ auth()->user()->email }}</li>
-        <li><strong>Dirección:</strong> {{ auth()->user()->direccion }}</li>
+        <li><strong>Dirección Principal:</strong> 
+            {{ auth()->user()->direcciones->first()?->calle ?? 'No registrada' }}
+        </li>
     </ul>
-    
 
     <h3>Productos Comprados</h3>
     <table class="table table-bordered">

@@ -1,7 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @import "~bootstrap/dist/css/bootstrap.min.css";
 
 .nav-link {
@@ -11,4 +7,17 @@
 
 .nav-link:hover {
     color: #0056b3;  /* Cambia el color al pasar el mouse, por ejemplo un tono más oscuro de azul */
+}
+
+/* Estilo adicional para el header */
+.header-admin {
+    background-color: #343a40;
+    color: #ffffff;
+    padding: 10px 0;
+    text-align: center;
+}
+
+/* Estilo adicional para el navbar */
+.navbar-admin {
+    background-color: #212529;
 }

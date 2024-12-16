@@ -23,8 +23,13 @@ class Direccion extends Model
         return $this->belongsTo(Usuario::class, 'rut_usuario', 'rut_usuario');
     }
     public function direcciones()
-{
-    return $this->hasMany(Direccion::class, 'rut_usuario', 'rut_usuario');
-}
+    {
+        return $this->hasMany(Direccion::class, 'rut_usuario', 'rut_usuario');
+    }
+    public function getFullAddressAttribute()
+    {
+        return "{$this->calle}, {$this->ciudad}, {$this->region}";
+    }
+
 
 }

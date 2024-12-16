@@ -34,5 +34,21 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
         Route::get('{id_venta}', [VentaController::class, 'show'])->name('show'); // Detalles de venta
         Route::patch('{id_venta}/estado', [VentaController::class, 'cambiarEstado'])->name('cambiarEstado'); // Cambiar estado
     });
+    // Gestión de Proveedores
+    Route::prefix('proveedores')->name('proveedores.')->group(function () {
+        Route::get('/', [AdminController::class, 'indexProveedores'])->name('index'); // Listar proveedores
+        Route::get('crear', [AdminController::class, 'crearProveedor'])->name('crear'); // Mostrar formulario
+        Route::post('/', [AdminController::class, 'guardarProveedor'])->name('guardar'); // Guardar proveedor
+    });
+
+    // Gestión de Compras
+    Route::prefix('compras')->name('compras.')->group(function () {
+        Route::get('/', [AdminController::class, 'indexCompras'])->name('index'); // Listar compras
+        Route::get('crear', [AdminController::class, 'crearCompra'])->name('crear'); // Mostrar formulario
+        Route::post('/', [AdminController::class, 'guardarCompra'])->name('guardar'); // Guardar compra
+        Route::get('{cod_compra}', [AdminController::class, 'showCompra'])->name('show'); // Mostrar detalles de una compra
+    });
+    
+    
 });
 

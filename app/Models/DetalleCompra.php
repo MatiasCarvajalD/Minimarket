@@ -12,11 +12,14 @@ class DetalleCompra extends Model
     protected $table = 'detalle_compra';
 
     protected $fillable = [
-        'id_compra',
+        'cod_compra',
         'cod_producto',
         'cantidad',
         'valor_unitario',
+        'subtotal',
+        'descripcion',
     ];
+    
 
     public function producto()
     {

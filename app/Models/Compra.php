@@ -9,13 +9,16 @@ class Compra extends Model
 {
     use HasFactory;
 
-    protected $table = 'compras';
-    protected $primaryKey = 'id_compra';
+    protected $table = 'compra';
+    protected $primaryKey = 'cod_compra';
+
+    public $incrementing = true; // Habilitar autoincremento
+    protected $keyType = 'int';  // Tipo entero para clave primaria
 
     protected $fillable = [
         'rut_proveedor',
         'fecha',
-        'total',
+        'descripcion',
     ];
 
     public function proveedor()
@@ -25,6 +28,7 @@ class Compra extends Model
 
     public function detalles()
     {
-        return $this->hasMany(DetalleCompra::class, 'id_compra', 'id_compra');
+        return $this->hasMany(DetalleCompra::class, 'cod_compra', 'cod_compra');
     }
 }
+
