@@ -3,6 +3,8 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminProductoController;
 use App\Http\Controllers\VentaController;
+use App\Http\Controllers\AjusteController;
+
 
 Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard
@@ -48,6 +50,14 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
         Route::post('/', [AdminController::class, 'guardarCompra'])->name('guardar'); // Guardar compra
         Route::get('{cod_compra}', [AdminController::class, 'showCompra'])->name('show'); // Mostrar detalles de una compra
     });
+
+    Route::prefix('ajustes')->name('ajustes.')->group(function () {
+        Route::get('/', [AjusteController::class, 'index'])->name('index'); // Listar ajustes
+        Route::get('crear', [AjusteController::class, 'create'])->name('create'); // Crear ajuste
+        Route::post('/', [AjusteController::class, 'store'])->name('store'); // Guardar ajuste
+    });
+
+
     
     
 });

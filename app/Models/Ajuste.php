@@ -10,11 +10,11 @@ class Ajuste extends Model
     use HasFactory;
 
     protected $table = 'ajuste';
-    protected $primaryKey = 'id_ajuste';
 
     protected $fillable = [
         'cod_producto',
         'cantidad',
+        'fecha',
         'tipo_ajuste',
         'descripcion',
     ];

@@ -33,7 +33,7 @@ class Venta extends Model
     
     public function detallesCheckout()
     {
-        return $this->hasOne(\App\Models\DetallesCheckout::class, 'id_venta');
+        return $this->hasOne(DetallesCheckout::class, 'id_venta');
     }
 
         // Método para calcular el total de la venta

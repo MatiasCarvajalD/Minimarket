@@ -12,10 +12,6 @@ use App\Models\Proveedor;
 use App\Models\DetalleCompra;
 use Illuminate\Support\Facades\DB; 
 
-
-
-
-
 class AdminController extends Controller
 {
     public function __construct()
@@ -195,6 +191,7 @@ class AdminController extends Controller
         return view('admin.compras.crear', compact('proveedores', 'productos'));
     }
     
+
     public function guardarCompra(Request $request)
     {
         DB::transaction(function () use ($request) {
@@ -205,27 +202,34 @@ class AdminController extends Controller
                 'detalle_general' => $request->detalle_general,
             ]);
     
-            // Guardar los detalles de la compra
+            // Guardar los detalles de la compra y actualizar stock
             foreach ($request->productos as $producto) {
                 DetalleCompra::create([
                     'cod_compra' => $compra->cod_compra,
                     'cod_producto' => $producto['cod_producto'],
                     'cantidad' => $producto['cantidad'],
                     'valor_unitario' => $producto['precio_unitario'],
-                    'subtotal' => $producto['cantidad'] * $producto['precio_unitario'], // Calcular subtotal
-                    'descripcion' => $producto['descripcion'],
+                    'subtotal' => $producto['cantidad'] * $producto['precio_unitario'],
+                    'descripcion' => $producto['descripcion'] ?? null,
                 ]);
+    
+                // Actualizar el stock del producto
+                $productoModel = Producto::find($producto['cod_producto']);
+                if ($productoModel) {
+                    $productoModel->increment('stock_actual', $producto['cantidad']);
+                }
             }
         });
     
-        return redirect()->route('admin.compras.index')->with('success', 'Compra registrada correctamente.');
+        return redirect()->route('admin.compras.index')->with('success', 'Compra registrada y stock actualizado correctamente.');
     }
     
     public function showCompra($cod_compra)
     {
-        $compra = Compra::with('detalles', 'proveedor')->findOrFail($cod_compra);
+        $compra = Compra::with(['detalles.producto', 'proveedor'])->findOrFail($cod_compra);
         return view('admin.compras.show', compact('compra'));
     }
+    
     
 
     public function indexCompras()

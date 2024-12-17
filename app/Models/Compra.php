@@ -18,7 +18,7 @@ class Compra extends Model
     protected $fillable = [
         'rut_proveedor',
         'fecha',
-        'descripcion',
+        'detalle_general',
     ];
 
     public function proveedor()

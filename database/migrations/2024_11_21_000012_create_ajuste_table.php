@@ -13,7 +13,7 @@ class CreateAjusteTable extends Migration
             $table->unsignedBigInteger('cod_producto'); // Clave foránea
             $table->unsignedTinyInteger('cantidad');
             $table->date('fecha');
-            $table->string('tipo_ajuste', 15);
+            $table->string('tipo_ajuste', 50);
             $table->string('descripcion', 255)->nullable();
             $table->timestamps();
             $table->foreign('cod_producto')->references('cod_producto')->on('productos')->cascadeOnDelete();
