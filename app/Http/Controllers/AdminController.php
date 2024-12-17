@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Producto;
 use App\Models\Venta;
-use Illuminate\Support\Str;
 use App\Models\Compra;
 use App\Models\Proveedor;
 use App\Models\DetalleCompra;
-use Illuminate\Support\Facades\DB; 
+use App\Models\Ajuste;
+use Carbon\Carbon;
+
 
 class AdminController extends Controller
 {
@@ -24,26 +27,45 @@ class AdminController extends Controller
         });
     }
 
-    // Dashboard
     public function dashboard()
     {
         $totalUsuarios = User::count();
         $totalProductos = Producto::count();
-        $totalVentas = Venta::count();
+        $stockCritico = Producto::whereColumn('stock_actual', '<=', 'stock_critico')->count();
+        $pedidosPendientes = Venta::where('entrega_completada', false)->count();
     
-        // Calcular ingresos totales desde detalle_venta
-        $ingresosTotales = \DB::table('detalle_venta')
-            ->sum(\DB::raw('cantidad * valor_unidad'));
+        $ultimosPedidos = Venta::orderBy('fecha', 'desc')->take(5)->get();
+        $ultimosAjustes = Ajuste::orderBy('fecha', 'desc')->take(5)->get();
     
-        return view('admin.dashboard', [
-            'totalUsuarios' => $totalUsuarios,
-            'totalProductos' => $totalProductos,
-            'totalVentas' => $totalVentas,
-            'ingresosTotales' => $ingresosTotales,
-        ]);
+        // Ventas y compras del mes anterior
+        $mesAnterior = Carbon::now()->subMonth();
+    
+        $ventasMesAnterior = Venta::whereMonth('fecha', $mesAnterior->month)
+            ->whereYear('fecha', $mesAnterior->year)
+            ->count();
+    
+        $comprasMesAnterior = Compra::whereMonth('fecha', $mesAnterior->month)
+            ->whereYear('fecha', $mesAnterior->year)
+            ->count();
+    
+        // Productos con stock crítico
+        $productosCriticos = Producto::whereColumn('stock_actual', '<=', 'stock_critico')->get();
+    
+        // Datos para el gráfico de ventas
+        $ventasMensuales = Venta::selectRaw('MONTH(fecha) as mes, SUM(detalle_venta.cantidad * detalle_venta.valor_unidad) as total')
+            ->join('detalle_venta', 'ventas.id_venta', '=', 'detalle_venta.id_venta')
+            ->groupBy('mes')
+            ->get();
+    
+        $ventasLabels = $ventasMensuales->pluck('mes');
+        $ventasData = $ventasMensuales->pluck('total');
+    
+        return view('admin.dashboard', compact(
+            'totalUsuarios', 'totalProductos', 'stockCritico', 'pedidosPendientes',
+            'ultimosPedidos', 'ultimosAjustes', 'productosCriticos',
+            'ventasLabels', 'ventasData', 'ventasMesAnterior', 'comprasMesAnterior'
+        ));
     }
-    
-    
 
     // Gestión de Usuarios
     public function usuarios()
