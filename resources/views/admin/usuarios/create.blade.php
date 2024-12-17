@@ -43,7 +43,6 @@
             <select class="form-control" id="rol" name="rol" required>
                 <option value="usuario">Usuario</option>
                 <option value="admin">Administrador</option>
-                <option value="invitado">Invitado</option>
             </select>
         </div>
 
