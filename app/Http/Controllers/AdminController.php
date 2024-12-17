@@ -55,17 +55,27 @@ class AdminController extends Controller
         $ventasMensuales = Venta::selectRaw('MONTH(fecha) as mes, SUM(detalle_venta.cantidad * detalle_venta.valor_unidad) as total')
             ->join('detalle_venta', 'ventas.id_venta', '=', 'detalle_venta.id_venta')
             ->groupBy('mes')
+            ->orderBy('mes', 'asc')
+            ->get();
+    
+        // Datos para el gráfico de compras
+        $comprasMensuales = Compra::selectRaw('MONTH(fecha) as mes, SUM(detalle_compra.cantidad * detalle_compra.valor_unitario) as total')
+            ->join('detalle_compra', 'compra.cod_compra', '=', 'detalle_compra.cod_compra')
+            ->groupBy('mes')
+            ->orderBy('mes', 'asc')
             ->get();
     
         $ventasLabels = $ventasMensuales->pluck('mes');
         $ventasData = $ventasMensuales->pluck('total');
+        $comprasData = $comprasMensuales->pluck('total'); // Asignar datos de compras
     
         return view('admin.dashboard', compact(
             'totalUsuarios', 'totalProductos', 'stockCritico', 'pedidosPendientes',
             'ultimosPedidos', 'ultimosAjustes', 'productosCriticos',
-            'ventasLabels', 'ventasData', 'ventasMesAnterior', 'comprasMesAnterior'
+            'ventasLabels', 'ventasData', 'comprasData', 'ventasMesAnterior', 'comprasMesAnterior'
         ));
     }
+    
 
     // Gestión de Usuarios
     public function usuarios()

@@ -124,15 +124,31 @@
     var chart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: {!! json_encode($ventasLabels) !!}, // Ejemplo: ["Enero", "Febrero"]
-            datasets: [{
-                label: 'Ventas Mensuales',
-                data: {!! json_encode($ventasData) !!}, // Ejemplo: [1500, 2000, 1800]
-                backgroundColor: 'rgba(54, 162, 235, 0.6)'
-            }]
+            labels: {!! json_encode($ventasLabels) !!}, // Etiquetas de los meses
+            datasets: [
+                {
+                    label: 'Ventas Mensuales',
+                    data: {!! json_encode($ventasData) !!}, // Datos de ventas
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Compras Mensuales',
+                    data: {!! json_encode($comprasData) !!}, // Datos de compras
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }
+            ]
         },
         options: {
-            responsive: true
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
         }
     });
 </script>
