@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@include('partials.alerts')
 
 @section('title', 'Finalizar Compra')
 

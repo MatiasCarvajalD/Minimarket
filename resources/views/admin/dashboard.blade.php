@@ -1,4 +1,5 @@
 @extends('layouts.admin')
+@include('partials.alerts')
 
 @section('title', 'Dashboard Admin')
 

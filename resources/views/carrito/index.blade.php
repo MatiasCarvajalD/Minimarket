@@ -1,24 +1,10 @@
 @extends('layouts.app')
-
+@include('partials.alerts')
 @section('title', 'Carrito de Compras')
 
 @section('content')
 <div class="container">
     <h1>Carrito de Compras</h1>
-
-    <!-- Mensajes de éxito o error -->
-    @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
-    @endif
-
     @if ($carrito->isEmpty())
         <div class="alert alert-info">
             Tu carrito está vacío. <a href="{{ route('minimarket.index') }}">Explora productos aquí</a>.

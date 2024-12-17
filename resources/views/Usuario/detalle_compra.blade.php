@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@include('partials.alerts')
 
 @section('content')
     <div class="container">

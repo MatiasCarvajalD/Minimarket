@@ -1,20 +1,8 @@
 @extends('layouts.admin')
-
+@include('partials.alerts')
 @section('content')
 <div class="container mt-4">
     <h2>Agregar Nuevo Proveedor</h2>
-
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <!-- Formulario de Proveedor -->
     <form action="{{ route('admin.proveedores.guardar') }}" method="POST">
         @csrf
 

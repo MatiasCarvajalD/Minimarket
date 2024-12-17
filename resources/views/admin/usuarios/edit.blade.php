@@ -1,21 +1,12 @@
 @extends('layouts.admin')
+@include('partials.alerts')
 
 @section('content')
     <div class="container">
         <h1>Editar Usuario</h1>
         <form action="{{ route('admin.usuarios.update', $usuario->rut_usuario) }}" method="POST">
             @csrf
-            @method('PUT')
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-        
+            @method('PUT')        
             <div class="mb-3">
                 <label for="nombre_usuario" class="form-label">Nombre</label>
                 <input type="text" class="form-control" id="nombre_usuario" name="nombre_usuario" value="{{ $usuario->nombre_usuario }}" required>

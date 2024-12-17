@@ -1,20 +1,10 @@
 @extends('layouts.admin')
-
+@include('partials.alerts')
 @section('content')
     <div class="container">
         <h1>Agregar Producto</h1>
         <form action="{{ route('admin.productos.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
             <div class="mb-3">
                 <label for="nom_producto" class="form-label">Nombre</label>
                 <input type="text" name="nom_producto" class="form-control" required>

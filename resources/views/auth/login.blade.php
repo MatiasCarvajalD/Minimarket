@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@include('partials.alerts')
 
 @section('title', 'Login')
 
@@ -26,13 +27,6 @@
                 </div>
             @enderror
         </div>
-
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                {{ $errors->first() }}
-            </div>
-        @endif
-
         <button type="submit" class="btn btn-primary">Iniciar sesión</button>
     </form>
     <hr>

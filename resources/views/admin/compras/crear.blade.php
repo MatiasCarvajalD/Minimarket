@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-
+@include('partials.alerts')
 @section('content')
 <div class="container">
     <h2>Registrar Compra</h2>

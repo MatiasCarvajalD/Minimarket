@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-
+@include('partials.alerts')
 @section('content')
 <h1>Detalles de la Compra</h1>
 

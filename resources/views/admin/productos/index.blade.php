@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-
+@include('partials.alerts')
 @section('content')
     <div class="container">
         <h1>Gestión de Productos</h1>
@@ -18,12 +18,6 @@
                 </tr>
             </thead>
             <tbody>
-                    <!-- Mensaje de éxito -->
-                @if(session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                @endif
                 @forelse($productos as $producto)
                     <tr>
                         
