@@ -42,6 +42,9 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
         Route::get('/', [AdminController::class, 'indexProveedores'])->name('index'); // Listar proveedores
         Route::get('crear', [AdminController::class, 'crearProveedor'])->name('crear'); // Mostrar formulario
         Route::post('/', [AdminController::class, 'guardarProveedor'])->name('guardar'); // Guardar proveedor
+        Route::get('{id_proveedor}/edit', [AdminController::class, 'editProveedor'])->name('edit');
+        Route::put('{id_proveedor}', [AdminController::class, 'updateProveedor'])->name('update');
+        Route::delete('{id_proveedor}', [AdminController::class, 'destroyProveedor'])->name('destroy');
     });
 
     // Gestión de Compras

@@ -31,9 +31,14 @@
                 <td>{{ $proveedor->direccion_proveedor }}</td>
                 <td>{{ $proveedor->correo_proveedor }}</td>
                 <td>
-                    <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                    <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
-                </td>
+                    <a href="{{ route('admin.proveedores.edit', $proveedor->id_proveedor) }}" class="btn btn-warning">Editar</a>
+                    
+                    <form action="{{ route('admin.proveedores.destroy', $proveedor->id_proveedor) }}" method="POST" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </td>                
             </tr>
             @endforeach
         </tbody>

@@ -195,7 +195,7 @@ class AdminController extends Controller
     {
         // Validación de los datos
         $request->validate([
-            'rut_proveedor' => 'required|numeric|unique:proveedor,rut_proveedor|max:15',
+            'rut_proveedor' => 'required|numeric|unique:proveedor,rut_proveedor|regex:/^\d{1,15}$/',
             'nom_proveedor' => 'required|max:255',
             'telefono_proveedor' => 'nullable|numeric',
             'direccion_proveedor' => 'nullable|max:255',
@@ -213,7 +213,34 @@ class AdminController extends Controller
     
         return redirect()->route('admin.proveedores.index')->with('success', 'Proveedor creado correctamente.');
     }
-    
+    public function editProveedor($id_proveedor)
+    {
+        $proveedor = Proveedor::findOrFail($id_proveedor); // Busca el proveedor
+        return view('admin.proveedores.edit', compact('proveedor')); // Retorna la vista de edición
+    }
+    public function updateProveedor(Request $request, $id_proveedor)
+    {
+        $proveedor = Proveedor::findOrFail($id_proveedor);
+
+        $request->validate([
+            'rut_proveedor' => 'required|string|max:12|unique:proveedor,rut_proveedor,' . $proveedor->id_proveedor . ',id_proveedor',
+            'nom_proveedor' => 'required|string|max:255',
+            'telefono_proveedor' => 'nullable|string|max:15',
+            'direccion_proveedor' => 'nullable|string|max:255',
+            'correo_proveedor' => 'nullable|email|max:255',
+        ]);
+
+        $proveedor->update($request->all()); // Actualiza los datos
+
+        return redirect()->route('admin.proveedores.index')->with('success', 'Proveedor actualizado correctamente.');
+    }
+    public function destroyProveedor($id_proveedor)
+    {
+        $proveedor = Proveedor::findOrFail($id_proveedor); // Busca el proveedor
+        $proveedor->delete(); // Elimina el proveedor
+
+        return redirect()->route('admin.proveedores.index')->with('success', 'Proveedor eliminado correctamente.');
+    }    
     
     public function crearCompra()
     {
@@ -270,25 +297,29 @@ class AdminController extends Controller
         return view('admin.compras.index', compact('compras'));
     }
 
-    public function generateCSV(request $request)
+    public function generateCSV(Request $request)
     {
-        $data = DB::select("select productos.nom_producto as nombre, sum(cantidad) as total 
-                            from detalle_venta 
-                            INNER JOIN productos on detalle_venta.cod_producto=productos.cod_producto
-                            where detalle_venta.created_at >= NOW() - INTERVAL 6 DAY
-                            group by nombre
-                            order by total");
-        $filename = "Top_Productos_Semana_Pasada";
+        $data = DB::select("SELECT productos.nom_producto as nombre, SUM(cantidad) as total 
+                            FROM detalle_venta 
+                            INNER JOIN productos ON detalle_venta.cod_producto = productos.cod_producto
+                            WHERE detalle_venta.created_at >= NOW() - INTERVAL 6 DAY
+                            GROUP BY nombre
+                            ORDER BY total");
+    
+        $filename = "Top_Productos_Semana_Pasada.csv"; 
         $handle = fopen($filename, 'w+');
-        fputcsv($handle,array('Nombre','Cantidad',));
-        foreach($data as $row){
-            fputcsv($handle, array ($row['nombre'],$row['total'],));
+    
+        fputcsv($handle, ['Nombre', 'Cantidad']);
+    
+        foreach ($data as $row) {
+            fputcsv($handle, [$row->nombre, $row->total]);
         }
         fclose($handle);
-        $headers = array('Content-Type' => 'text/csv');
-        return response()->download($filename, 'Top_Productos_Semana_Pasada.csv', $headers);
-
+        $headers = ['Content-Type' => 'text/csv'];
+    
+        return response()->download($filename, $filename, $headers);
     }
+    
 
 
     
