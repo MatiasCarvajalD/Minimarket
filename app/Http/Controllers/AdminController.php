@@ -195,7 +195,7 @@ class AdminController extends Controller
     {
         // Validación de los datos
         $request->validate([
-            'rut_proveedor' => 'required|unique:proveedor,rut_proveedor|max:15',
+            'rut_proveedor' => 'required|numeric|unique:proveedor,rut_proveedor|max:15',
             'nom_proveedor' => 'required|max:255',
             'telefono_proveedor' => 'nullable|numeric',
             'direccion_proveedor' => 'nullable|max:255',
