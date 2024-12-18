@@ -14,6 +14,7 @@
                     <th>Precio</th>
                     <th>Stock</th>
                     <th>Categoría</th>
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -28,6 +29,16 @@
                         <td>${{ $producto->precio }}</td>
                         <td>{{ $producto->stock_actual }}</td>
                         <td>{{ $producto->tipoProducto->categoria }}</td>
+                        <td>
+                            <?php 
+                            if($producto->stock_actual <= $producto->stock_critico): 
+                                echo '<div style="color: red;">Critico</div>';
+                            else:
+                                echo '<div style="color: green;">Ok</div>';
+                            
+                            endif; 
+                            ?>
+                        </td>
                         <td>
                             <a href="{{ route('admin.productos.edit', $producto->cod_producto) }}" class="btn btn-warning btn-sm">Editar</a>
                             <form action="{{ route('admin.productos.destroy', $producto->cod_producto) }}" method="POST" style="display:inline-block;">
