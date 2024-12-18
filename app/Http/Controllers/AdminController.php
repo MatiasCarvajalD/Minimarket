@@ -270,7 +270,25 @@ class AdminController extends Controller
         return view('admin.compras.index', compact('compras'));
     }
 
-    
+    public function generateCSV(request $request)
+    {
+        $data = DB::select("select productos.nom_producto as nombre, sum(cantidad) as total 
+                            from detalle_venta 
+                            INNER JOIN productos on detalle_venta.cod_producto=productos.cod_producto
+                            where detalle_venta.created_at >= NOW() - INTERVAL 6 DAY
+                            group by nombre
+                            order by total");
+        $filename = "Top_Productos_Semana_Pasada";
+        $handle = fopen($filename, 'w+');
+        fputcsv($handle,array('Nombre','Cantidad',));
+        foreach($data as $row){
+            fputcsv($handle, array ($row['nombre'],$row['total'],));
+        }
+        fclose($handle);
+        $headers = array('Content-Type' => 'text/csv');
+        return response()->download($filename, 'Top_Productos_Semana_Pasada.csv', $headers);
+
+    }
 
 
     

@@ -9,6 +9,7 @@ use App\Http\Controllers\AjusteController;
 Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard
     Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/get-csv', [AdminController::class, 'generateCsv'])->name('download.csv');
 
     // Gestión de Usuarios
     Route::prefix('usuarios')->name('usuarios.')->group(function () {

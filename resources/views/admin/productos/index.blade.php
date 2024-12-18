@@ -4,6 +4,9 @@
     <div class="container">
         <h1>Gestión de Productos</h1>
         <a href="{{ route('admin.productos.create') }}" class="btn btn-primary mb-3">Agregar Producto</a>
+        
+        <a href="{{ route('admin.download.csv') }}" class="btn btn-primary mb-3">Download CSV</a>
+        
         <table class="table table-striped">
             <thead>
                 <tr>
