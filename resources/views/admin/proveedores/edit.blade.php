@@ -12,7 +12,7 @@
         <div class="form-group mb-3">
             <label for="rut_proveedor">RUT Proveedor</label>
             <input type="text" name="rut_proveedor" id="rut_proveedor" class="form-control" 
-                   value="{{ old('rut_proveedor', $proveedor->rut_proveedor) }}" required>
+                   value="{{ old('rut_proveedor', $proveedor->rut_proveedor) }}" readonly>
         </div>
 
         {{-- Nombre Proveedor --}}
