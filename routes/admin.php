@@ -31,8 +31,8 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
         Route::get('{cod_producto}/edit', [AdminProductoController::class, 'edit'])->name('edit'); // Editar producto
         Route::put('{cod_producto}', [AdminProductoController::class, 'update'])->name('update'); // Actualizar producto
         Route::delete('{cod_producto}', [AdminProductoController::class, 'destroy'])->name('destroy'); // Eliminar producto
-        Route::patch('{cod_producto}/restore', [AdminProductoController::class, 'restoreProducto'])->name('productos.restore');
-        Route::delete('{cod_producto}/force', [AdminProductoController::class, 'forceDeleteProducto'])->name('productos.forceDelete');
+        Route::patch('{cod_producto}/restore', [AdminProductoController::class, 'restoreProducto'])->name('restore');
+        Route::delete('{cod_producto}/force', [AdminProductoController::class, 'forceDeleteProducto'])->name('forceDelete');
 
     });
 

@@ -28,7 +28,13 @@
                         $total += $subtotal;
                     @endphp
                     <tr>
-                        <td>{{ $detalle->producto->nom_producto }}</td>
+                        <td>
+                            @if ($detalle->producto)
+                                {{ $detalle->producto->nom_producto }}
+                            @else
+                                <span class="text-danger">Producto no disponible</span>
+                            @endif
+                        </td>
                         <td>{{ $detalle->cantidad }}</td>
                         <td>${{ $detalle->valor_unidad }}</td>
                         <td>${{ $subtotal }}</td>

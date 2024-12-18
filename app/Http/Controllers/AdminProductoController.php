@@ -7,21 +7,21 @@ use App\Models\Producto;
 use App\Models\TipoProducto;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 
 class AdminProductoController extends Controller
 {
     public function index()
     {
-        $productos = Producto::all();
+        $productos = Producto::withTrashed()->get();
         return view('admin.productos.index', compact('productos'));
     }
 
     public function create()
     {
-        $categorias = TipoProducto::all(); // Obtén todas las categorías
-        return view('admin.productos.create', compact('categorias')); // Pásalas a la vista
+        $categorias = TipoProducto::all();
+        return view('admin.productos.create', compact('categorias')); 
     }
 
     
@@ -53,26 +53,20 @@ class AdminProductoController extends Controller
             if ($request->hasFile('imagen')) {
                 $file = $request->file('imagen');
             
-                // Generar un nombre único para la imagen
                 $filename = time() . '_' . preg_replace('/[^A-Za-z0-9.\-]/', '_', $file->getClientOriginalName());
             
-                // Ruta de destino absoluta
                 $destinationPath = storage_path('app/public/images');
             
-                // Crear la carpeta si no existe
                 if (!file_exists($destinationPath)) {
                     mkdir($destinationPath, 0755, true);
                 }
             
-                // Mover la imagen a la carpeta destino
                 $file->move($destinationPath, $filename);
             
-                // Guardar la ruta relativa en la base de datos
                 $producto->imagen = 'storage/images/' . $filename;
             
                 \Log::info('Imagen guardada manualmente en: ' . $destinationPath . '/' . $filename);
             }
-            // Guardar el producto en la base de datos
             $producto->save();
     
             return redirect()->route('admin.productos.index')->with('success', 'Producto creado correctamente.');
