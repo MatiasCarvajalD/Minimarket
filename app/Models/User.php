@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, SoftDeletes;
 
     protected $table = 'usuarios';
     protected $primaryKey = 'rut_usuario';
@@ -15,6 +16,7 @@ class User extends Authenticatable
     protected $keyType = 'string';
     public $timestamps = true;
 
+    protected $dates = ['deleted_at']; 
 
     protected $fillable = [
         'rut_usuario',
@@ -34,17 +36,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Venta::class, 'rut_usuario', 'rut_usuario');
     }
+
     public function currentCarrito()
     {
         return $this->carrito()->get();
     }
+
     public function recentVentas()
     {
         return $this->ventas()->orderBy('fecha', 'desc')->limit(5)->get();
     }
+
     public function direcciones()
     {
         return $this->hasMany(Direccion::class, 'rut_usuario', 'rut_usuario');
     }
-
 }

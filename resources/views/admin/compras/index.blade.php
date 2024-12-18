@@ -25,7 +25,12 @@
             @foreach ($compras as $compra)
                 <tr>
                     <td>{{ $compra->cod_compra }}</td>
-                    <td>{{ $compra->proveedor->nom_proveedor }}</td>
+                    <td>    @if ($compra->proveedor)
+                                {{ $compra->proveedor->nom_proveedor }}
+                            @else
+                                <span class="text-danger">Proveedor no disponible</span>
+                            @endif
+                    </td>
                     <td>{{ \Carbon\Carbon::parse($compra->fecha)->format('d-m-Y') }}</td>
                     <td>{{ $compra->detalle_general }}</td>
                     <td>

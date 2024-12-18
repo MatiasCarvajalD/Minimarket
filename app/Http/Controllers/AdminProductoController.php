@@ -72,9 +72,6 @@ class AdminProductoController extends Controller
             
                 \Log::info('Imagen guardada manualmente en: ' . $destinationPath . '/' . $filename);
             }
-            
-            
-    
             // Guardar el producto en la base de datos
             $producto->save();
     
@@ -85,10 +82,6 @@ class AdminProductoController extends Controller
         }
     }
     
-    
-    
-    
-
     public function edit($cod_producto)
     {
         $producto = Producto::findOrFail($cod_producto);
@@ -119,4 +112,20 @@ class AdminProductoController extends Controller
 
         return redirect()->route('admin.productos.index')->with('success', 'Producto eliminado exitosamente.');
     }
+    public function restoreProducto($cod_producto)
+    {
+        $producto = Producto::withTrashed()->findOrFail($cod_producto);
+        $producto->restore(); // Restaurar el producto eliminado
+
+        return redirect()->route('admin.productos.index')->with('success', 'Producto restaurado correctamente.');
+    }
+    public function forceDeleteProducto($cod_producto)
+    {
+        $producto = Producto::withTrashed()->findOrFail($cod_producto);
+        $producto->forceDelete(); // Eliminar físicamente el producto
+
+        return redirect()->route('admin.productos.index')->with('success', 'Producto eliminado permanentemente.');
+    }
+
+
 }

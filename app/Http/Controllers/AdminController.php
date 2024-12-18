@@ -80,7 +80,7 @@ class AdminController extends Controller
     // Gestión de Usuarios
     public function usuarios()
     {
-        $usuarios = User::all();
+        $usuarios = User::withTrashed()->get(); // Incluye eliminados
         return view('admin.usuarios.index', compact('usuarios'));
     }
 
@@ -139,16 +139,25 @@ class AdminController extends Controller
             return redirect()->route('admin.usuarios.index')->withErrors('No puedes eliminar tu propio usuario.');
         }
     
-        // Buscar y eliminar el usuario
-        $usuario = User::where('rut_usuario', $rut_usuario)->first();
+        // Buscar el usuario (con soporte para SoftDeletes si aplica)
+        $usuario = User::find($rut_usuario);
     
-        if ($usuario) {
-            $usuario->delete();
-            return redirect()->route('admin.usuarios.index')->with('success', 'Usuario eliminado correctamente.');
+        // Verificar si el usuario existe
+        if (!$usuario) {
+            return redirect()->route('admin.usuarios.index')->withErrors('El usuario no existe.');
         }
     
-        return redirect()->route('admin.usuarios.index')->withErrors('El usuario no existe.');
+        // Verificar si el usuario tiene un rol restringido (opcional)
+        if ($usuario->rol === 'admin') {
+            return redirect()->route('admin.usuarios.index')->withErrors('No puedes eliminar a un administrador.');
+        }
+    
+        // Eliminar el usuario (SoftDeletes si está habilitado)
+        $usuario->delete();
+    
+        return redirect()->route('admin.usuarios.index')->with('success', 'Usuario eliminado correctamente.');
     }
+    
     // Mostrar el formulario para crear un usuario
     public function crearUsuario()
     {
@@ -180,11 +189,22 @@ class AdminController extends Controller
 
         return redirect()->route('admin.usuarios.index')->with('success', 'Usuario creado correctamente.');
     }
+    public function usuariosRestore($rut_usuario)
+    {
+        $usuario = User::withTrashed()->findOrFail($rut_usuario);
+
+        // Restaurar el usuario eliminado
+        $usuario->restore();
+
+        return redirect()->route('admin.usuarios.index')->with('success', 'Usuario restaurado correctamente.');
+    }
+
     public function indexProveedores()
     {
-        $proveedores = Proveedor::all(); // Obtener proveedores
+        $proveedores = Proveedor::withTrashed()->get(); // Incluye proveedores eliminados
         return view('admin.proveedores.index', compact('proveedores'));
     }
+    
     
     public function crearProveedor()
     {
@@ -236,11 +256,21 @@ class AdminController extends Controller
     }
     public function destroyProveedor($id_proveedor)
     {
-        $proveedor = Proveedor::findOrFail($id_proveedor); // Busca el proveedor
-        $proveedor->delete(); // Elimina el proveedor
-
+        $proveedor = Proveedor::findOrFail($id_proveedor);
+        $proveedor->delete(); // SoftDelete: marca el registro como eliminado
+    
         return redirect()->route('admin.proveedores.index')->with('success', 'Proveedor eliminado correctamente.');
-    }    
+    }
+    public function restoreProveedor($id_proveedor)
+    {
+        // Buscar el proveedor con SoftDeletes habilitado
+        $proveedor = Proveedor::withTrashed()->findOrFail($id_proveedor);
+
+        $proveedor->restore();
+
+        return redirect()->route('admin.proveedores.index')->with('success', 'Proveedor restaurado correctamente.');
+    }
+
     
     public function crearCompra()
     {

@@ -5,7 +5,7 @@
     <div class="container">
         <h1>Detalle de la Venta</h1>
         <h3>Venta #{{ $venta->id_venta }}</h3>
-        <p><strong>Usuario:</strong> {{ $venta->usuario->nombre_usuario }}</p>
+        <p><strong>Usuario:</strong> {{ $venta->usuario?->nombre_usuario ?? 'Usuario no disponible' }}</p>
         <p><strong>Fecha:</strong> {{ $venta->fecha }}</p>
         <p><strong>Tipo de Entrega:</strong> {{ $venta->tipo_entrega == 1 ? 'Retiro' : 'Delivery' }}</p>
         <p><strong>Estado:</strong> {{ $venta->entrega_completada ? 'Completada' : 'Pendiente' }}</p>

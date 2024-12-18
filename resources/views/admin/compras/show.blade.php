@@ -10,7 +10,13 @@
     </tr>
     <tr>
         <th>Proveedor:</th>
-        <td>{{ $compra->proveedor->nom_proveedor }}</td>
+        <td>
+           @if ($compra->proveedor)
+                {{ $compra->proveedor->nom_proveedor }}
+            @else
+                <span class="text-danger">Proveedor no disponible</span>
+            @endif
+        </td>
     </tr>
     <tr>
         <th>Fecha:</th>

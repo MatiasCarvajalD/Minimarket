@@ -32,6 +32,14 @@
                         <td>{{ $usuario->email }}</td>
                         <td>{{ ucfirst($usuario->rol) }}</td>
                         <td>
+                            @if ($usuario->deleted_at)
+                                <form action="{{ route('admin.usuarios.restore', $usuario->rut_usuario) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="btn btn-success btn-sm">Restaurar</button>
+                                </form>
+                            @endif
+
                             <a href="{{ route('admin.usuarios.edit', $usuario->rut_usuario) }}" class="btn btn-warning btn-sm">Editar</a>
                             @if (auth()->user()->rut_usuario !== $usuario->rut_usuario)
                             <form action="{{ route('admin.usuarios.destroy', $usuario->rut_usuario) }}" method="POST" style="display: inline-block;">

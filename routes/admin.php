@@ -19,6 +19,8 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
         Route::get('{rut_usuario}/edit', [AdminController::class, 'editarUsuario'])->name('edit'); // Editar usuario
         Route::put('{rut_usuario}', [AdminController::class, 'actualizarUsuario'])->name('update'); // Actualizar usuario
         Route::delete('{rut_usuario}', [AdminController::class, 'usuariosDestroy'])->name('destroy'); // Eliminar usuario
+        Route::patch('{rut_usuario}/restore', [AdminController::class, 'usuariosRestore'])->name('restore');
+
     });
 
     // Gestión de Productos
@@ -29,6 +31,9 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
         Route::get('{cod_producto}/edit', [AdminProductoController::class, 'edit'])->name('edit'); // Editar producto
         Route::put('{cod_producto}', [AdminProductoController::class, 'update'])->name('update'); // Actualizar producto
         Route::delete('{cod_producto}', [AdminProductoController::class, 'destroy'])->name('destroy'); // Eliminar producto
+        Route::patch('{cod_producto}/restore', [AdminProductoController::class, 'restoreProducto'])->name('productos.restore');
+        Route::delete('{cod_producto}/force', [AdminProductoController::class, 'forceDeleteProducto'])->name('productos.forceDelete');
+
     });
 
     // Gestión de Ventas
@@ -45,6 +50,8 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
         Route::get('{id_proveedor}/edit', [AdminController::class, 'editProveedor'])->name('edit');
         Route::put('{id_proveedor}', [AdminController::class, 'updateProveedor'])->name('update');
         Route::delete('{id_proveedor}', [AdminController::class, 'destroyProveedor'])->name('destroy');
+        Route::patch('{id_proveedor}/restore', [AdminController::class, 'restoreProveedor'])->name('restore');
+
     });
 
     // Gestión de Compras
